@@ -15,6 +15,7 @@ import "./destructive-actions.css";
 import "./action-feedback.css";
 import "./qr-modal-overrides.css";
 import "./offline.css";
+import "./dashboard-polish.css";
 
 createRoot(document.getElementById("root")!).render(
   <React.StrictMode>

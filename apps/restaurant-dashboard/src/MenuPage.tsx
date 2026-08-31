@@ -131,7 +131,7 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
         {category.items.length === 0 && <p className="empty-inline">No items in this category yet.</p>}
         {category.items.map(item => <article className={!item.isAvailable ? "unavailable" : ""} key={item.id}>
           {item.imageUrl ? <img className="menu-thumb" src={item.imageUrl} alt={`${item.name} menu item`} loading="lazy" decoding="async" /> : <div className="menu-thumb placeholder-photo" aria-hidden="true">Photo</div>}
-          <div><b>{item.name}</b>{!item.isAvailable && <span className="stock-status">Out of stock</span>}<p>{item.description}</p><strong>{money(item.price)}</strong><small>{item.prepMinutes || 15} min{item.gstRate != null ? ` · GST ${item.gstRate}%` : ""}{item.hsnCode ? ` · HSN ${item.hsnCode}` : ""}</small>{item.options?.map(option => <small key={option.id}>{option.name}{option.priceDelta ? ` · ${option.priceDelta > 0 ? "+" : ""}${money(option.priceDelta)}` : ""}</small>)}</div>
+          <div><b>{item.name}</b>{!item.isAvailable && <span className="stock-status">Out of stock</span>}<p>{item.description}</p><strong>{money(item.price)}</strong><small>{item.prepMinutes || 15} min{item.gstRate != null ? ` · GST ${item.gstRate}%` : ""}{item.hsnCode ? ` · HSN ${item.hsnCode}` : ""}</small>{(Array.isArray(item.options) ? item.options : []).map(option => <small key={option.id}>{option.name}{option.priceDelta ? ` · ${option.priceDelta > 0 ? "+" : ""}${money(option.priceDelta)}` : ""}</small>)}</div>
           {canManage && <div className="menu-item-actions"><button type="button" className="availability" onClick={() => setEditing(item)}>Edit</button><button type="button" className="danger-action" onClick={() => deleteItem(item)}>Delete</button></div>}
         </article>)}
       </div>)}
@@ -147,7 +147,7 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
       <label>Price (₹)<input name="price" type="number" defaultValue={editing?.price} min="1" max="1000000" step="1" inputMode="numeric" required /></label>
       <div className="form-row"><label>HSN/SAC code<input name="hsnCode" inputMode="numeric" pattern="[0-9]{4,8}" defaultValue={editing?.hsnCode || ""} placeholder="Optional" /></label><label>GST rate %<input name="gstRate" type="number" min="0" max="50" step=".01" defaultValue={editing?.gstRate} placeholder="Restaurant default" /></label></div>
       <label>Preparation estimate (minutes)<input name="prepMinutes" type="number" defaultValue={editing?.prepMinutes || 15} min="1" max="180" step="1" inputMode="numeric" required /></label>
-      <label>Tags<input name="tags" defaultValue={editing?.tags.join(", ")} placeholder="Bestseller, Spicy" /></label>
+      <label>Tags<input name="tags" defaultValue={Array.isArray(editing?.tags) ? editing.tags.join(", ") : ""} placeholder="Bestseller, Spicy" /></label>
       <label className="check"><input name="isVeg" type="checkbox" defaultChecked={editing?.isVeg ?? true} /> Vegetarian</label>
       {editing && <label className="check stock-toggle"><input name="outOfStock" type="checkbox" defaultChecked={!editing.isAvailable} /> Out of stock</label>}
       <button disabled={Boolean(busy)}>{busy === "item" ? "Saving…" : editing ? "Save changes" : "Add item"}</button>

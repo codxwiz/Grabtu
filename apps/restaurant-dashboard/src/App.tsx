@@ -138,12 +138,12 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
   const loadMenu = useCallback(async () => {
     const next = await api<Category[]>("/api/admin/menu", token);
-    const missingOptions = next.flatMap(category => category.items.filter(item => item.options === undefined));
+    const missingOptions = next.flatMap(category => category.items.filter(item => !Array.isArray(item.options)));
     if (missingOptions.length) {
       const options = await Promise.all(missingOptions.map(item => api<MenuItemOption[]>(`/api/admin/menu/items/${item.id}/options`, token)));
-      const byItem = new Map(missingOptions.map((item, index) => [item.id, options[index]]));
+      const byItem = new Map(missingOptions.map((item, index) => [item.id, Array.isArray(options[index]) ? options[index] : []]));
       for (const category of next) {
-        category.items = category.items.map(item => item.options === undefined ? { ...item, options: byItem.get(item.id) || [] } : item);
+        category.items = category.items.map(item => Array.isArray(item.options) ? item : { ...item, options: byItem.get(item.id) || [] });
       }
     }
     setCategories(next);

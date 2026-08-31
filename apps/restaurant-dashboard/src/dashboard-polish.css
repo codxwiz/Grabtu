@@ -1,0 +1,328 @@
+/* Final dashboard rhythm and responsive layer. Keep this import last. */
+:root {
+  --console-gap-1: 8px;
+  --console-gap-2: 12px;
+  --console-gap-3: 16px;
+  --console-touch: 44px;
+}
+
+.console-shell :is(button, a, input, select, textarea) { touch-action: manipulation; }
+.console-shell button { cursor: pointer; }
+.console-shell button:disabled { cursor: not-allowed; }
+.skip-link {
+  position: fixed;
+  z-index: 200;
+  top: 10px;
+  left: 10px;
+  transform: translateY(-160%);
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #f6f0e2;
+  color: #17372b;
+  font-weight: 800;
+  text-decoration: none;
+}
+.skip-link:focus { transform: translateY(0); }
+
+.mobile-nav-signout { display: none; }
+.table-actions,
+.menu-item-actions,
+.table-edit-actions,
+.support-ticket-fields { gap: var(--console-gap-2) !important; }
+.table-actions,
+.menu-item-actions,
+.table-edit-actions { align-items: stretch; flex-wrap: wrap; }
+.table-actions button,
+.menu-item-actions button,
+.table-edit-actions button,
+.inline-form button,
+.item-form button,
+.staff-list button,
+.payment-cards button { min-height: var(--console-touch) !important; }
+.station-ticket button { min-height: var(--console-touch) !important; }
+.menu-item-actions { display: flex; }
+.menu-item-actions {
+  gap: var(--console-gap-3) !important;
+  padding-left: var(--console-gap-2);
+}
+.menu-item-actions button { min-width: 88px; }
+.item-form form > button + button { margin-top: var(--console-gap-2) !important; }
+
+.settings-support-column {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+.support-ticket-card {
+  display: grid;
+  grid-template-columns: minmax(220px, .6fr) minmax(0, 1.4fr);
+  gap: 24px;
+  padding: 26px;
+  border: 1px solid #3f4948;
+  border-radius: 22px;
+  background: #222829;
+}
+.support-ticket-card > div:first-child { align-self: start; }
+.support-ticket-card h2 { margin: 6px 0 8px; font-size: 28px; }
+.support-ticket-card p { margin: 0; color: #aab4bd; line-height: 1.55; }
+.support-ticket-card form { display: grid; gap: var(--console-gap-3); min-width: 0; }
+.support-ticket-card label { display: grid; gap: var(--console-gap-1); min-width: 0; color: #d8dedc; font-size: 14px; font-weight: 700; }
+.support-ticket-card input,
+.support-ticket-card select,
+.support-ticket-card textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
+  padding: 12px 14px;
+  border: 1px solid #465251;
+  border-radius: 12px;
+  background: #1a2021;
+  color: #f6f7f6;
+  font: inherit;
+}
+.support-ticket-card textarea { min-height: 112px; resize: vertical; }
+.support-ticket-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.support-ticket-list { grid-column: 1 / -1; display: grid; gap: 10px; padding-top: 20px; border-top: 1px solid #3f4948; }
+.support-ticket-list h3 { margin: 0 0 4px; }
+.support-ticket-list article { display: flex; align-items: center; gap: 16px; margin: 0; padding: 14px 16px; }
+.support-ticket-list article > div { display: grid; gap: 4px; min-width: 0; margin-right: auto; }
+.support-ticket-list small { color: #aab4bd; }
+.ticket-status { flex: 0 0 auto; padding: 7px 10px; border-radius: 999px; background: #123832; color: #7ee8c6; font-size: 11px; font-weight: 800; }
+
+body.console-theme-light .support-ticket-card {
+  border-color: #dbe1d9;
+  background: #fff;
+  box-shadow: 0 10px 24px rgba(36, 46, 36, .06);
+}
+body.console-theme-light .support-ticket-card label { color: #35423a; }
+body.console-theme-light .support-ticket-card input,
+body.console-theme-light .support-ticket-card select,
+body.console-theme-light .support-ticket-card textarea { border-color: #cbd5d1; background: #fff; color: #17231f; }
+
+.billing-grid { align-items: start; }
+.plan-card { gap: var(--console-gap-3) !important; }
+.plan-choose-button,
+.current-plan-button,
+.enterprise-contact { min-width: 170px; min-height: 48px !important; }
+.invoice-row { gap: var(--console-gap-2) !important; }
+
+.payment-review-card { display: grid; gap: 18px; }
+.payment-review-card .merchant-connect-heading { align-items: flex-end; }
+.payment-review-card .merchant-connect-heading > div { min-width: 0; }
+.payment-review-card .merchant-connect-heading > button {
+  width: auto;
+  min-width: 112px;
+  min-height: var(--console-touch) !important;
+  margin: 0 !important;
+  padding: 10px 16px !important;
+}
+.payment-review-list { display: grid; gap: var(--console-gap-2); }
+.payment-review-row {
+  display: grid;
+  grid-template-columns: minmax(170px, 1fr) auto auto minmax(180px, auto);
+  align-items: center;
+  gap: var(--console-gap-3);
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #414d4c;
+  border-radius: 15px;
+  background: #1c2324 !important;
+  color: #f5f7f6 !important;
+  box-shadow: none !important;
+}
+.payment-review-row > div:first-child { display: grid; gap: 4px; min-width: 0; }
+.payment-review-row small { color: #aab4bd; }
+.payment-review-row > strong { color: #7ee8c6; white-space: nowrap; }
+.payment-review-actions { display: flex; gap: var(--console-gap-1); }
+.payment-review-actions button { min-height: var(--console-touch) !important; margin: 0 !important; padding: 10px 14px !important; white-space: nowrap; }
+body.console-theme-light .payment-review-row { border-color: #dbe1d9; background: #fff !important; color: #202820 !important; }
+body.console-theme-light .payment-review-row small { color: #69746d; }
+.color-field input[type="color"] { min-width: 48px; min-height: 44px !important; }
+
+@media (min-width: 851px) {
+  .console-sidebar .mobile-nav-signout { display: none !important; }
+}
+
+@media (max-width: 850px) {
+  html, body, #root { width: 100%; max-width: 100%; overflow-x: hidden; }
+  body { overscroll-behavior-y: contain; }
+  .console-shell { width: 100% !important; max-width: none; padding: 10px 12px 44px !important; }
+  .console-body { display: block !important; width: 100%; }
+  .console-shell .console-sidebar {
+    position: sticky !important;
+    inset: 0 auto auto 0 !important;
+    z-index: 50;
+    display: block !important;
+    width: 100% !important;
+    height: auto !important;
+    padding: 0 !important;
+    margin: 0 0 16px !important;
+    overflow: visible !important;
+    background: transparent !important;
+  }
+  .console-switcher {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center !important;
+    gap: 10px !important;
+    width: 100%;
+    margin: 0 !important;
+    padding: 10px !important;
+    border-radius: 18px !important;
+    background: rgba(37, 41, 45, .97) !important;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, .22);
+    backdrop-filter: blur(14px);
+  }
+  .console-brand-in-panel {
+    min-height: 44px;
+    justify-content: flex-start !important;
+    margin: 0 !important;
+    padding: 4px 8px !important;
+    border: 0 !important;
+  }
+  .console-brand-in-panel .grabtu-wordmark { font-size: 27px; }
+  .console-menu-scroll {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: var(--console-gap-2);
+    width: 100%;
+    min-width: 0;
+    padding: 2px 0 3px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+    scroll-snap-type: x proximity;
+  }
+  .console-menu-scroll::-webkit-scrollbar { display: none; }
+  .console-sidebar .console-tab {
+    flex: 0 0 auto;
+    min-width: max-content !important;
+    min-height: var(--console-touch) !important;
+    padding: 10px 14px !important;
+    border-radius: 13px !important;
+    font-size: 12px !important;
+    line-height: 1.2 !important;
+    scroll-snap-align: start;
+  }
+  .mobile-nav-signout {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 76px;
+    min-height: var(--console-touch) !important;
+    margin: 0 !important;
+    padding: 9px 12px !important;
+    border: 1px solid #4b555d !important;
+    border-radius: 13px !important;
+    background: #30373d !important;
+    color: #eef2f0 !important;
+    font-size: 12px !important;
+  }
+  .console-view { width: 100% !important; min-width: 0; margin: 0 !important; padding: 0 !important; }
+  .console-header {
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: space-between !important;
+    gap: 12px !important;
+    margin-bottom: 16px !important;
+  }
+  .console-header > div:first-child { display: block !important; min-width: 0; }
+  .console-header > div:first-child > p,
+  .console-header > div:first-child > h1 { display: block; margin: 0 !important; }
+  .console-header > div:first-child > p { font-size: 12px !important; line-height: 1.35; }
+  .console-header > div:first-child > h1 { margin-top: 4px !important; font-size: clamp(28px, 9vw, 36px) !important; }
+  .header-actions { position: static !important; display: flex !important; width: auto !important; }
+  .header-actions .theme-toggle { width: 52px !important; height: 44px !important; min-height: 44px !important; }
+  .header-actions .live,
+  .header-actions .signout { display: none !important; }
+
+  .operations-hero { padding: 18px !important; border-radius: 18px; }
+  .operations-hero h2 { font-size: 28px; line-height: 1.12; }
+  .operations-kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+  .operations-kpis span { min-width: 0; }
+  .kds-station-bar { gap: var(--console-gap-2); }
+  .kds-station-bar .secondary-action { width: 100%; min-height: var(--console-touch); }
+  .station-kds-grid {
+    display: grid !important;
+    grid-template-columns: 1fr !important;
+    gap: var(--console-gap-2);
+    overflow-x: visible !important;
+    scroll-snap-type: none !important;
+  }
+  .station-column { width: 100%; min-width: 0; min-height: 180px; }
+
+  .inline-form,
+  .table-add { display: grid !important; grid-template-columns: 1fr !important; gap: var(--console-gap-2) !important; }
+  .inline-form input,
+  .inline-form button { width: 100%; min-height: 48px; }
+  .table-grid,
+  .payment-layout,
+  .ops-layout,
+  .menu-layout,
+  .settings-layout,
+  .billing-grid { grid-template-columns: minmax(0, 1fr) !important; gap: var(--console-gap-3) !important; }
+  .table-grid { grid-template-columns: 1fr !important; }
+  .table-actions { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .table-actions button { width: 100%; }
+  .payment-cards article,
+  .staff-list article,
+  .menu-category article { grid-template-columns: 48px minmax(0, 1fr) !important; gap: var(--console-gap-2) !important; }
+  .payment-cards article > button,
+  .staff-list article > button,
+  .menu-item-actions { grid-column: 1 / -1; width: 100%; }
+  .menu-item-actions {
+    display: flex !important;
+    flex-direction: row !important;
+    gap: var(--console-gap-2) !important;
+    padding: var(--console-gap-1) 0 0;
+  }
+  .menu-item-actions button {
+    flex: 1 1 0 !important;
+    width: 0 !important;
+    min-width: 0;
+  }
+  .staff-role-grid,
+  .asset-grid,
+  .charge-fields,
+  .support-ticket-fields { grid-template-columns: 1fr !important; }
+  .settings-form,
+  .entitlement-card,
+  .support-ticket-card,
+  .billing-plans-card,
+  .invoices-card,
+  .merchant-connect-card { padding: 18px !important; border-radius: 18px !important; }
+  .support-ticket-card { grid-template-columns: 1fr; gap: 20px; }
+  .support-ticket-list { grid-column: 1; }
+  .settings-save-bar { align-items: stretch !important; flex-direction: column !important; }
+  .settings-save { width: 100%; }
+  .plan-card { grid-template-columns: 1fr !important; padding: 18px !important; }
+  .plan-choose-button,
+  .current-plan-button,
+  .enterprise-contact { width: 100%; min-width: 0; }
+  .invoice-row { grid-template-columns: auto minmax(0, 1fr) auto !important; }
+  .invoice-status,
+  .invoice-amount,
+  .invoice-action { grid-column: auto; }
+  .payment-review-card .merchant-connect-heading { align-items: stretch; }
+  .payment-review-card .merchant-connect-heading > button { width: 100%; }
+  .payment-review-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .payment-review-row > strong { font-size: 18px; }
+  .payment-review-actions { display: grid; grid-template-columns: 1fr; }
+  .payment-review-actions button { width: 100%; }
+}
+
+@media (max-width: 430px) {
+  .console-shell { padding-inline: 10px !important; }
+  .operations-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .operations-tabs button { width: 100%; min-width: 0; padding-inline: 10px; }
+  .table-actions { grid-template-columns: 1fr 1fr; }
+  .menu-category article { align-items: flex-start !important; flex-wrap: wrap; }
+  .menu-category article .menu-thumb { width: 64px !important; height: 64px !important; }
+  .invoice-row { grid-template-columns: auto minmax(0, 1fr) !important; }
+  .invoice-status,
+  .invoice-amount,
+  .invoice-action { grid-column: 2; justify-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .console-shell *, .console-shell *::before, .console-shell *::after { scroll-behavior: auto !important; }
+}

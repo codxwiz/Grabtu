@@ -56,7 +56,7 @@ const state: DemoState = {
     name: "Demo Owner",
     phone: "+919876543210",
     role: "owner",
-    capabilities: ["kds.manage","inventory.read","inventory.manage","reservations.read","reservations.manage","finance.read","finance.manage","growth.read","growth.manage","integrations.read","integrations.manage","payments.refund"],
+    capabilities: ["kds.manage","orders.prepare","payments.confirm","inventory.read","inventory.manage","reservations.read","reservations.manage","finance.read","finance.manage","growth.read","growth.manage","integrations.read","integrations.manage","payments.refund"],
     restaurant: { id: "rest_demo", name: "The Saffron Table", slug: "demo-bistro" },
   },
   settings: {
@@ -437,6 +437,10 @@ export async function demoRequest<T>(path: string, init: RequestInit = {}): Prom
   if(/^\/api\/admin\/orders\/[^/]+\/refund$/.test(path)&&method==="POST"){const order=state.history.find(entry=>entry.id===path.split("/")[4]);if(order)order.paymentStatus="refunded";return respond(order||success("Refund recorded")) as T}
 
   if (path === "/api/admin/menu") return respond(state.categories) as T;
+  if (path.startsWith("/api/admin/menu/items/") && path.endsWith("/options") && method === "GET") {
+    const item = findItem(path.split("/")[4]);
+    return respond(Array.isArray(item?.options) ? item.options : []) as T;
+  }
   if (path === "/api/admin/menu/categories" && method === "POST") {
     const category = { id: uid("cat"), name: String(body?.name || "New category"), sortOrder: Number(body?.sortOrder || state.categories.length + 1), items: [] as MenuItem[] };
     state.categories.push(category);
@@ -525,7 +529,7 @@ export async function demoRequest<T>(path: string, init: RequestInit = {}): Prom
     return respond(table) as T;
   }
 
-  if (path === "/api/admin/payment-methods") return respond(state.payments) as T;
+  if (path === "/api/admin/payment-methods" && method === "GET") return respond(state.payments) as T;
   if (path === "/api/admin/card-merchant" && method === "GET") return respond(state.cardMerchant) as T;
   if (path === "/api/admin/card-merchant" && method === "PUT") {const testMode=String(body?.keyId||"").startsWith("rzp_test_");state.cardMerchant={provider:"razorpay",maskedKeyId:`${String(body?.keyId||"").slice(0,8)}••••••••`,connected:true,enabled:!testMode,testMode,webhookUrl:"https://api.example.com/api/payments/razorpay/webhook/demo",webhookSecret:"demo-secret-shown-once",verifiedAt:new Date().toISOString()};return respond(state.cardMerchant) as T;}
   if (path === "/api/admin/card-merchant" && method === "DELETE") {state.cardMerchant={provider:"razorpay",maskedKeyId:"",connected:false,enabled:false,testMode:false,webhookUrl:"https://api.example.com/api/payments/razorpay/webhook/demo",verifiedAt:null};return undefined as T;}
@@ -554,7 +558,7 @@ export async function demoRequest<T>(path: string, init: RequestInit = {}): Prom
     return undefined as T;
   }
 
-  if (path === "/api/admin/staff") return respond(state.staff) as T;
+  if (path === "/api/admin/staff" && method === "GET") return respond(state.staff) as T;
   if (path === "/api/admin/staff" && method === "POST") {
     const member: StaffMember = {
       id: uid("staff"),
