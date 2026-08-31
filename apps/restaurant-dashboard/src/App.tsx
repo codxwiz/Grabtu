@@ -1,6 +1,6 @@
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import type { Order } from "@whitelabel/shared-types";
-import { api, ApiError, TOKEN_KEY } from "./api";
+import { API, api, ApiError, TOKEN_KEY } from "./api";
 import { BillingPage } from "./BillingPage";
 import { Login } from "./Login";
 import { MenuPage } from "./MenuPage";
@@ -8,8 +8,9 @@ import { PaymentsPage } from "./PaymentsPage";
 import { SettingsPage } from "./SettingsPage";
 import { StaffPage } from "./StaffPage";
 import { TablesPage } from "./TablesPage";
-import { disableDemoSession } from "./demo-mode";
-import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, MenuItem, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, SessionUser, StaffMember, SupportTicket } from "./types";
+import { disableDemoSession, isDemoSession } from "./demo-mode";
+import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, MenuItem, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, ServiceRequest, SessionUser, StaffMember, SupportTicket } from "./types";
+import { isOpenWaiterCall, useWaiterAlertSound, WaiterAlertControls, WaiterAlertStack } from "./WaiterAlerts";
 
 const KdsPage = lazy(() => import("./KdsPage").then(module => ({ default: module.KdsPage })));
 const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
@@ -63,12 +64,17 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
   const [billing, setBilling] = useState<Billing | null>(null);
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
+  const [waiterRequests, setWaiterRequests] = useState<ServiceRequest[]>([]);
+  const [waiterBusyId, setWaiterBusyId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const successTimer = useRef<number | null>(null);
   const errorTimer = useRef<number | null>(null);
+  const seenWaiterRequests = useRef(new Set<string>());
+  const waiterSound = useWaiterAlertSound();
   const role = user?.role.toUpperCase() || "";
+  const restaurantId = user?.restaurant.id || "";
   const visiblePages = role ? (ACCESS[role] || []) : [];
   const canManageMenu = ["OWNER", "MANAGER", "SUPERVISOR"].includes(role);
   const canManageTables = ["OWNER", "MANAGER", "SUPERVISOR"].includes(role);
@@ -76,6 +82,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const canConfigureCard = role === "OWNER";
   const canPrepare = Boolean(user?.capabilities?.includes("orders.prepare"));
   const canVerifyPayments = Boolean(user?.capabilities?.includes("payments.confirm"));
+  const canReceiveWaiterCalls = ["OWNER", "MANAGER", "SUPERVISOR", "WAITER"].includes(role);
 
   const clearFeedbackTimers = useCallback(() => {
     if (successTimer.current !== null) window.clearTimeout(successTimer.current);
@@ -164,6 +171,11 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     await Promise.all([loadPayments(), loadVerificationOrders()]);
   }, [loadPayments, loadVerificationOrders]);
   const loadBilling = useCallback(async () => setBilling(await api<Billing>("/api/admin/billing", token)), [token]);
+  const loadWaiterRequests = useCallback(async () => {
+    const next = await api<ServiceRequest[]>("/api/admin/service-requests", token);
+    for (const request of next) seenWaiterRequests.current.add(request.id);
+    setWaiterRequests(next.filter(isOpenWaiterCall));
+  }, [token]);
   const loadSettings = useCallback(async () => {
     const [profile, limits, tickets] = await Promise.all([
       api<RestaurantSettings>("/api/admin/settings", token),
@@ -181,6 +193,44 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     localStorage.setItem(THEME_KEY, theme);
   }, [theme]);
   useEffect(() => { void loadUser(); }, [loadUser]);
+  useEffect(() => {
+    if (!restaurantId || !canReceiveWaiterCalls) {
+      setWaiterRequests([]);
+      return;
+    }
+    void loadWaiterRequests().catch(() => undefined);
+  }, [canReceiveWaiterCalls, loadWaiterRequests, restaurantId]);
+  useEffect(() => {
+    if (!restaurantId || !canReceiveWaiterCalls || isDemoSession(token)) return;
+    let cancelled = false;
+    let closeSocket: (() => void) | null = null;
+    const onNewRequest = (request: ServiceRequest) => {
+      if (!isOpenWaiterCall(request)) return;
+      setWaiterRequests(current => [request, ...current.filter(entry => entry.id !== request.id)]);
+      if (!seenWaiterRequests.current.has(request.id)) {
+        seenWaiterRequests.current.add(request.id);
+        void waiterSound.play();
+      }
+    };
+    const onUpdatedRequest = (request: ServiceRequest) => {
+      seenWaiterRequests.current.add(request.id);
+      setWaiterRequests(current => isOpenWaiterCall(request)
+        ? [request, ...current.filter(entry => entry.id !== request.id)]
+        : current.filter(entry => entry.id !== request.id));
+    };
+    void import("socket.io-client").then(({ io }) => {
+      if (cancelled) return;
+      const socket = io(API, { auth: { token } });
+      closeSocket = () => socket.close();
+      socket.on("connect", () => { void loadWaiterRequests().catch(() => undefined); });
+      socket.on("service-request:new", onNewRequest);
+      socket.on("service-request:updated", onUpdatedRequest);
+    });
+    return () => {
+      cancelled = true;
+      closeSocket?.();
+    };
+  }, [canReceiveWaiterCalls, loadWaiterRequests, restaurantId, token, waiterSound.play]);
   useEffect(() => {
     if (!user) return;
     if (!visiblePages.includes(page)) setPage(visiblePages[0] || "kds");
@@ -205,6 +255,13 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   async function safeUploadAsset(kind: "logo" | "cover" | "menu-item", file: File) {
     const result = await run(() => uploadAsset(kind, file), "");
     return result.ok ? result.value : null;
+  }
+
+  async function acknowledgeWaiterRequest(request: ServiceRequest) {
+    setWaiterBusyId(request.id);
+    const result = await run(() => api<ServiceRequest>(`/api/admin/service-requests/${request.id}`, token, { method: "PATCH", body: JSON.stringify({ status: "ACKNOWLEDGED" }), offline: "queue-safe" }), "Waiter call acknowledged");
+    if (result.ok) setWaiterRequests(current => current.filter(entry => entry.id !== request.id));
+    setWaiterBusyId(null);
   }
 
   async function saveItem(data: Partial<MenuItem> & { categoryId: string; name: string; price: number }) {
@@ -241,8 +298,9 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
       <button type="button" className="mobile-nav-signout" onClick={signOut}>Sign out</button>
     </nav></aside>
     <main id="console-main" tabIndex={-1} className={`console-view page-${page}`}><header className="console-header"><div><p>{user.restaurant.name}</p><h1>{LABEL[page]}</h1></div><div className="header-actions">
-      <button type="button" className={`theme-toggle ${theme}`} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={() => setTheme(current => current === "dark" ? "light" : "dark")}><ThemeIcon theme={theme} /></button><div className={`live ${navigator.onLine ? "" : "offline"}`}><i /> {navigator.onLine ? "Live" : "Offline"}</div><button type="button" className="signout" onClick={signOut}>Sign out</button>
+      {canReceiveWaiterCalls && <WaiterAlertControls enabled={waiterSound.enabled} blocked={waiterSound.blocked} onToggle={() => { void waiterSound.toggle(); }} onTest={() => { void waiterSound.test(); }} />}<button type="button" className={`theme-toggle ${theme}`} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={() => setTheme(current => current === "dark" ? "light" : "dark")}><ThemeIcon theme={theme} /></button><div className={`live ${navigator.onLine ? "" : "offline"}`}><i /> {navigator.onLine ? "Live" : "Offline"}</div><button type="button" className="signout" onClick={signOut}>Sign out</button>
     </div></header>
+    <WaiterAlertStack requests={waiterRequests} busyId={waiterBusyId} onAcknowledge={request => { void acknowledgeWaiterRequest(request); }} onDismiss={request => setWaiterRequests(current => current.filter(entry => entry.id !== request.id))} />
     {error && <div className="error console-prompt" role="alert">{error}</div>}{success && <div className="toast-inline console-prompt" role="status">{success}</div>}
     <Suspense fallback={<section className="operations-card" aria-live="polite"><p>Loading workspace…</p></section>}>
       {page === "kds" && <KdsPage token={token} canManage={Boolean(user.capabilities?.includes("kds.manage"))} canPrepare={canPrepare} onMessage={notifyFromKds} />}

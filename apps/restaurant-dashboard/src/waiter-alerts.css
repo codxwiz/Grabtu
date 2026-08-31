@@ -1,0 +1,50 @@
+.restaurant-alerts-control {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  min-width: 46px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid #556169;
+  border-radius: 14px;
+  background: #30373d;
+  color: #e9eeec;
+}
+.restaurant-alerts-control svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.restaurant-alerts-control i { position: absolute; top: 7px; right: 7px; width: 8px; height: 8px; border: 2px solid #30373d; border-radius: 50%; background: #8b969d; }
+.restaurant-alerts-control.enabled { border-color: #2b9b78 !important; background: #153d33 !important; color: #9ef0d4 !important; }
+.restaurant-alerts-control.enabled i { border-color: #153d33; background: #45d3a4; }
+.restaurant-alerts-control.blocked { border-color: #b98639 !important; background: #3b2c18 !important; color: #f3c979 !important; }
+.restaurant-alerts-control.blocked i { border-color: #3b2c18; background: #f0ad3c; }
+
+.waiter-alert-stack { position: fixed; z-index: 160; top: 84px; right: 24px; display: grid; gap: 12px; width: min(420px, calc(100vw - 32px)); pointer-events: none; }
+.waiter-alert-card { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; margin: 0; padding: 18px; border: 1px solid #c48735; border-radius: 18px; background: #2d261c; color: #fff; box-shadow: 0 22px 60px rgba(0, 0, 0, .42); pointer-events: auto; animation: waiter-alert-enter .24s ease-out both; }
+.waiter-alert-bell { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 14px; background: #49351b; color: #f2bd63; }
+.waiter-alert-bell svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+.waiter-alert-copy { min-width: 0; }
+.waiter-alert-copy span { display: block; color: #f2bd63; font: 700 11px "IBM Plex Mono", monospace; letter-spacing: .08em; text-transform: uppercase; }
+.waiter-alert-copy strong { display: block; margin-top: 3px; font: 600 23px Oswald, sans-serif; text-transform: uppercase; }
+.waiter-alert-copy p { margin: 5px 0 0; color: #e7ddd0; line-height: 1.4; overflow-wrap: anywhere; }
+.waiter-alert-copy time { display: block; margin-top: 6px; color: #b9aa96; font: 11px "IBM Plex Mono", monospace; }
+.waiter-alert-actions { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; }
+.waiter-alert-actions button { min-height: 44px !important; margin: 0 !important; border: 1px solid #bf8b3f !important; border-radius: 12px !important; background: #a66e22 !important; color: #fff !important; font-weight: 800; }
+.waiter-alert-actions .waiter-alert-dismiss { min-width: 92px; background: transparent !important; color: #e1d5c4 !important; }
+body.console-theme-light .waiter-alert-card { border-color: #d1a25f; background: #fff8ed; color: #282117; box-shadow: 0 18px 48px rgba(57, 42, 20, .18); }
+body.console-theme-light .waiter-alert-copy p { color: #5f513f; }
+body.console-theme-light .waiter-alert-copy time { color: #796b59; }
+
+@keyframes waiter-alert-enter { from { opacity: 0; transform: translateY(-12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+@media (max-width: 850px) {
+  .restaurant-alerts-test { display: none !important; }
+  .header-actions .restaurant-alerts-control { width: 44px !important; min-width: 44px !important; height: 44px !important; min-height: 44px !important; border-radius: 14px !important; }
+  .header-actions .restaurant-alerts-control svg { width: 21px !important; height: 21px !important; }
+  .waiter-alert-stack { top: 12px; right: 12px; width: calc(100vw - 24px); }
+  .waiter-alert-card { padding: 15px; }
+}
+@media (max-width: 430px) {
+  .waiter-alert-actions { grid-template-columns: 1fr; }
+  .waiter-alert-actions button { width: 100%; }
+}
+@media (prefers-reduced-motion: reduce) { .waiter-alert-card { animation: none; } }
