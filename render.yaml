@@ -58,16 +58,6 @@ services:
         sync: false
       - key: VAPID_SUBJECT
         value: mailto:hello@grabtu.com
-      - key: RAZORPAY_KEY_ID
-        sync: false
-      - key: RAZORPAY_KEY_SECRET
-        sync: false
-      - key: RAZORPAY_PLAN_STARTER_ID
-        sync: false
-      - key: RAZORPAY_PLAN_GROWTH_ID
-        sync: false
-      - key: RAZORPAY_PLAN_BUSINESS_ID
-        sync: false
       - key: ALLOW_PRODUCTION_SEED
         value: "false"
       - key: QR_STORAGE_PROVIDER

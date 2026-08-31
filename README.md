@@ -76,7 +76,7 @@ Before creating the Blueprint, have these values ready:
 - Firebase Admin and web configuration
 - VAPID public/private keys and a real `mailto:` value for `VAPID_SUBJECT`
 - Product support/sales values for both static sites
-- All Razorpay platform billing values together: key ID, key secret, and Starter, Growth, and Business plan IDs
+- When subscription billing is enabled, add all Razorpay platform billing values together: key ID, key secret, and Starter, Growth, and Business plan IDs. Leave all five unset until then; partial configuration is rejected.
 
 Render generates the JWT, payment-encryption, and billing-webhook secrets. Database migrations run as the API's pre-deploy command, before new code is started. The database accepts only private-network connections by default.
 

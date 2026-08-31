@@ -107,11 +107,16 @@ function validateProductionEnvironment() {
     if (!process.env.RESEND_API_KEY) errors.push("RESEND_API_KEY is required when EMAIL_PROVIDER=resend");
   }
 
-  if (!process.env.RAZORPAY_KEY_ID) errors.push("RAZORPAY_KEY_ID is required for production subscription billing");
-  if (!process.env.RAZORPAY_KEY_SECRET) errors.push("RAZORPAY_KEY_SECRET is required for production subscription billing");
-  if (!process.env.RAZORPAY_PLAN_STARTER_ID) errors.push("RAZORPAY_PLAN_STARTER_ID is required for production subscription billing");
-  if (!process.env.RAZORPAY_PLAN_GROWTH_ID) errors.push("RAZORPAY_PLAN_GROWTH_ID is required for production subscription billing");
-  if (!process.env.RAZORPAY_PLAN_BUSINESS_ID && !process.env.RAZORPAY_PLAN_PRO_ID) errors.push("RAZORPAY_PLAN_BUSINESS_ID or RAZORPAY_PLAN_PRO_ID is required for production subscription billing");
+  const razorpayBillingValues = [
+    process.env.RAZORPAY_KEY_ID,
+    process.env.RAZORPAY_KEY_SECRET,
+    process.env.RAZORPAY_PLAN_STARTER_ID,
+    process.env.RAZORPAY_PLAN_GROWTH_ID,
+    process.env.RAZORPAY_PLAN_BUSINESS_ID || process.env.RAZORPAY_PLAN_PRO_ID,
+  ];
+  if (razorpayBillingValues.some(Boolean) && razorpayBillingValues.some(value => !value)) {
+    errors.push("Razorpay subscription billing must be configured with the key ID, key secret, and all three plan IDs together");
+  }
 
   if (errors.length) {
     throw new Error(`Invalid production environment:\n- ${errors.join("\n- ")}`);
