@@ -1,0 +1,18 @@
+{
+  "name": "White Label Restaurant Console",
+  "short_name": "White Label",
+  "description": "Live restaurant orders, kitchen display, tables, menu and payments.",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "orientation": "any",
+  "background_color": "#10151a",
+  "theme_color": "#17372b",
+  "categories": ["business", "food", "productivity"],
+  "icons": [
+    { "src": "/favicon.png", "sizes": "1254x1254", "type": "image/png", "purpose": "any" },
+    { "src": "/favicon.png", "sizes": "1254x1254", "type": "image/png", "purpose": "maskable" }
+  ]
+}

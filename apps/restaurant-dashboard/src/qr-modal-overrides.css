@@ -1,0 +1,4 @@
+.console-shell .modal-card{padding-top:88px!important}
+.console-shell .modal-card .modal-close{position:absolute!important;left:50%!important;right:auto!important;top:18px!important;transform:translateX(-50%)!important;width:48px!important;height:48px!important;padding:0!important;border:1px solid rgba(255,255,255,.5)!important;border-radius:50%!important;background:transparent!important;color:#fff!important;font-size:32px!important;line-height:1!important}
+.console-shell .modal-card h2{margin:0 0 24px!important;text-align:center!important}
+.console-shell .modal-card code{color:#000!important}

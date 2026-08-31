@@ -1,0 +1,27 @@
+{
+  "name": "white-label-restaurant-platform",
+  "private": true,
+  "version": "0.1.0",
+  "engines": {
+    "node": ">=22.0.0 <23",
+    "npm": ">=10 <12"
+  },
+  "workspaces": ["apps/*", "services/*", "packages/*"],
+  "scripts": {
+    "dev": "node --env-file=.env node_modules/concurrently/dist/bin/concurrently.js -n api,menu,dashboard -c cyan,green,magenta \"npm run dev -w @whitelabel/api\" \"npm run dev -w @whitelabel/customer-web\" \"npm run dev -w @whitelabel/restaurant-dashboard\"",
+    "test": "node --import tsx --test services/api/src/*.test.ts apps/restaurant-dashboard/src/*.test.ts",
+    "build": "npm run build --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "verify": "npm run check:secrets && npm test && npm run typecheck && npm run build && npm run audit:production",
+    "audit:production": "npm audit --omit=dev --audit-level=critical",
+    "check:secrets": "node scripts/check-repository.mjs"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "brace-expansion": "5.0.9"
+  }
+}

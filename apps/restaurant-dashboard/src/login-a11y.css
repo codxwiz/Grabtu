@@ -1,0 +1,13 @@
+.login form > p{color:#6b4500}.login form > small{color:#5e655f}
+.login .auth-tabs{display:flex;gap:10px;margin:18px 0 10px}
+.login .auth-tab{width:auto!important;flex:1;border:1px solid #d7dbd4!important;background:#f7f9f4!important;color:#304238!important;padding:11px 12px!important;border-radius:12px!important}
+.login .auth-tab.active{background:#17372b!important;color:#fff!important;border-color:#17372b!important}
+.login .auth-pill{display:inline-flex;align-items:center;gap:8px;background:#e8f4ea;color:#276e3e;border:1px solid #bfdec6;border-radius:999px;padding:8px 12px;margin-top:10px;font-size:12px}
+.login .premium-plan-field{gap:8px}
+.login .premium-select-shell{position:relative;display:flex;align-items:center;border-radius:16px;background:linear-gradient(180deg,#ffffff,#f4f7f2);border:1px solid #cfd8cf;box-shadow:0 1px 0 rgba(255,255,255,.9) inset,0 12px 26px rgba(18,38,25,.08);overflow:hidden;transition:transform .22s ease,border-color .22s ease,box-shadow .22s ease,background .22s ease}
+.login .premium-select-shell:hover,.login .premium-select-shell:focus-within{transform:translateY(-1px);border-color:#a8c8b7;box-shadow:0 18px 30px rgba(18,38,25,.1),inset 0 1px 0 rgba(255,255,255,.9)}
+.login .premium-select{appearance:none;-webkit-appearance:none;-moz-appearance:none;width:100%;border:0;background:transparent;color:#202820;font:600 16px/1.2 'DM Sans',sans-serif;padding:14px 52px 14px 16px;outline:none;cursor:pointer;letter-spacing:.01em}
+.login .premium-select option{color:#202820;background:#fff}
+.login .premium-select-arrow{position:absolute;right:14px;width:28px;height:28px;border-radius:999px;display:grid;place-items:center;color:#17372b;background:linear-gradient(180deg,#f7faf7,#e6efe8);border:1px solid rgba(23,55,43,.15);box-shadow:0 8px 16px rgba(18,38,25,.08);pointer-events:none;font-size:14px;transition:transform .2s ease,background .2s ease,box-shadow .2s ease}
+.login .premium-select-shell:hover .premium-select-arrow,.login .premium-select-shell:focus-within .premium-select-arrow{transform:translateY(-1px) scale(1.03);background:linear-gradient(180deg,#eef5f0,#dfe8e1)}
+.login .recaptcha-slot{position:absolute;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden}

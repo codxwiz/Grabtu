@@ -1,0 +1,16 @@
+.git
+.github
+.DS_Store
+.env*
+!.env.example
+node_modules
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+**/*.log
+coverage
+**/.cache
+services/api/data
+backups
+playwright-report
+test-results

@@ -1,0 +1,29 @@
+/* Neutral at rest; green communicates an unsaved, actionable form. */
+.console-shell button:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control.enabled){background:#3c444a!important;border-color:#59636a!important;color:#eef2f4!important}
+.console-shell form.is-dirty button:not([type]),.console-shell form.is-dirty button[type="submit"]{background:#2e8066!important;border-color:#45a985!important;color:#fff!important;box-shadow:0 10px 24px rgba(28,115,84,.24),inset 0 1px 0 rgba(255,255,255,.16)!important}
+.console-shell form:not(.is-dirty) button:not([type]),.console-shell form:not(.is-dirty) button[type="submit"]{background:#555e64!important;border-color:#687278!important;color:#f1f4f5!important}
+.console-shell button:disabled{background:#343a3f!important;border-color:#454d52!important;color:#929a9f!important;box-shadow:none!important}
+.console-shell .danger-action{background:#7c352f!important;border-color:#a95046!important;color:#ffe9e6!important}
+.console-shell .console-tab.active{background:#46515a!important;color:#fff!important}
+.console-shell .request-status-trigger .status-copy small{color:#d2d8dc!important}
+body.console-theme-light .console-shell button:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control.enabled){background:#e3e7e4!important;border-color:#c9d0cb!important;color:#26312a!important}
+body.console-theme-light .console-shell form.is-dirty button:not([type]),body.console-theme-light .console-shell form.is-dirty button[type="submit"]{background:#2e8066!important;border-color:#287156!important;color:#fff!important}
+body.console-theme-light .console-shell form:not(.is-dirty) button:not([type]),body.console-theme-light .console-shell form:not(.is-dirty) button[type="submit"]{background:#d9dedb!important;border-color:#c2cac4!important;color:#303a33!important}
+body.console-theme-light .console-shell .danger-action{background:#f5ded9!important;border-color:#deb3aa!important;color:#7c2e27!important}
+body.console-theme-light .console-shell .request-status-trigger .status-copy small{color:#48564d!important}
+
+/* Every neutral grey action becomes Restaurant Platform green on hover; disabled controls stay neutral. */
+.console-shell button:not(.danger-action):not(.restaurant-alerts-control.enabled):not(:disabled):hover,
+.console-shell .console-tab:not(.active):hover{
+  background:#17372b!important;
+  border-color:#2e7d5b!important;
+  color:#fff!important;
+}
+
+.demo-notice{margin:0 0 16px;padding:11px 14px;border:1px solid #506068;border-radius:12px;background:#2d353a;color:#e0e5e8;font-size:14px}
+.console-prompt,.console-view .toast-inline,.console-view .error,.console-view .settings-message{position:fixed!important;z-index:120!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(calc(100vw - 32px),480px)!important;margin:0!important;padding:18px 22px!important;border-radius:16px!important;text-align:center!important;font-size:16px!important;font-weight:750!important;line-height:1.45!important;box-shadow:0 24px 70px rgba(0,0,0,.42)!important;animation:console-prompt-life 2s ease forwards!important;pointer-events:none!important}
+.console-view .toast-inline,.console-view .settings-message{background:#173e34!important;border:1px solid #3d9b79!important;color:#c9f8e7!important}
+.console-view .error{background:#512b27!important;border:1px solid #a95c52!important;color:#ffd4ce!important}
+@keyframes console-prompt-life{0%,99%{opacity:1;visibility:visible;transform:translate(-50%,-50%) scale(1)}100%{opacity:1;visibility:hidden;transform:translate(-50%,-50%) scale(1)}}
+@media(prefers-reduced-motion:reduce){.console-prompt,.console-view .toast-inline,.console-view .error,.console-view .settings-message{animation:console-prompt-life-reduced 2s linear forwards!important}@keyframes console-prompt-life-reduced{0%,90%{opacity:1}100%{opacity:0;visibility:hidden}}}
+.restaurant-alerts-actions{display:inline-flex;align-items:center;gap:7px}.restaurant-alerts-test{min-height:44px;padding:9px 11px;border:1px solid #46535d;border-radius:12px;background:#1b242b;color:#d7dde1;font-weight:700;white-space:nowrap}body.console-theme-light .restaurant-alerts-test{border-color:#ccd6d0;background:#fff;color:#34443b}@media(max-width:850px){.restaurant-alerts-test{padding:9px;font-size:11px}}

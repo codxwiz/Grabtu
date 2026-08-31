@@ -1,0 +1,37 @@
+.offline-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 16px;
+  padding: 12px 15px;
+  border: 1px solid rgba(226, 99, 76, 0.36);
+  border-radius: 14px;
+  background: rgba(91, 42, 34, 0.42);
+  color: #ffd9d1;
+}
+
+.offline-notice.syncing {
+  border-color: rgba(45, 212, 191, 0.3);
+  background: rgba(18, 56, 50, 0.58);
+  color: #c8fff4;
+}
+
+.offline-notice b {
+  flex: 0 0 auto;
+  font: 700 13px Oswald, sans-serif;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.offline-notice span {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .offline-notice {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+}

@@ -1,0 +1,1 @@
+ALTER TABLE "Table" ADD COLUMN "lastClearedAt" TIMESTAMP(3);

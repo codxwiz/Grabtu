@@ -1,0 +1,12 @@
+export type OrderStatus = "new" | "accepted" | "preparing" | "ready" | "served" | "cancelled";
+export type MenuItemOption = { id: string; name: string; priceDelta: number; isAvailable: boolean };
+export type MenuItem = { id: string; categoryId: string; name: string; description: string; price: number; isAvailable: boolean; isVeg: boolean; tags: string[]; imageUrl?:string; prepMinutes?:number; options?: MenuItemOption[] };
+export type MenuCategory = { id: string; name: string; sortOrder: number; items: MenuItem[] };
+export type Restaurant = { id: string; name: string; slug: string; tagline: string; currency: "INR"; orderingEnabled?: boolean; orderPauseMessage?: string; taxPercent?: number; serviceChargePercent?: number; logoUrl?:string; coverImageUrl?:string; brandColor?:string; cardPaymentsEnabled?:boolean; cardPaymentKeyId?:string };
+export type PaymentMethod = { id:string; provider:string; displayName:string; upiId?:string; phone?:string; qrImageData:string };
+export type MenuResponse = { restaurant: Restaurant; table: { id: string; label: string; qrToken?:string }; categories: MenuCategory[]; paymentMethods:PaymentMethod[] };
+export type OrderItemOption = { id: string; name: string; priceDelta: number };
+export type OrderItemInput = { menuItemId: string; quantity: number; notes?: string; optionIds?: string[] };
+export type OrderItem = { id: string; menuItemId: string; name: string; quantity: number; unitPrice: number; notes?: string; options?: OrderItemOption[] };
+export type PaymentStatus = "pay_at_counter" | "pending" | "reported" | "paid" | "refunded";
+export type Order = { id: string; trackingToken?:string; restaurantId: string; tableId: string; tableLabel: string; status: OrderStatus; items: OrderItem[]; totalAmount: number; subtotalAmount?: number; taxAmount?: number; serviceChargeAmount?: number; paymentStatus: PaymentStatus; paymentMode?:"upi"|"card"|"counter"; paymentMethod?:Pick<PaymentMethod,"id"|"provider"|"displayName">; paymentReference?:string; estimatedReadyAt?:string; createdAt: string; updatedAt: string };

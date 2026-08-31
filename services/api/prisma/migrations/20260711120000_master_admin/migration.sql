@@ -1,0 +1,2 @@
+-- This migration intentionally remains empty.
+-- The master admin tables and Restaurant.isActive column were already created in the prior migration.

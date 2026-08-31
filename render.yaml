@@ -1,0 +1,164 @@
+databases:
+  - name: white-label-db
+    plan: basic-256mb
+    region: singapore
+    databaseName: white_label
+    user: white_label
+    ipAllowList: []
+
+services:
+  - type: web
+    name: white-label-api
+    runtime: node
+    plan: starter
+    region: singapore
+    buildCommand: npm ci --include=dev && npm run build -w @whitelabel/api
+    preDeployCommand: npm run db:deploy -w @whitelabel/api
+    startCommand: npm run start -w @whitelabel/api
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    disk:
+      name: white-label-api-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: TRUST_PROXY
+        value: "1"
+      - key: API_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: white-label-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PAYMENT_CREDENTIALS_SECRET
+        generateValue: true
+      - key: BILLING_WEBHOOK_SECRET
+        generateValue: true
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: CUSTOMER_ORIGIN
+        sync: false
+      - key: DASHBOARD_ORIGIN
+        sync: false
+      - key: MASTER_ADMIN_ORIGIN
+        sync: false
+      - key: MASTER_ADMIN_PHONE
+        sync: false
+      - key: VAPID_PUBLIC_KEY
+        sync: false
+      - key: VAPID_PRIVATE_KEY
+        sync: false
+      - key: VAPID_SUBJECT
+        sync: false
+      - key: RAZORPAY_KEY_ID
+        sync: false
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+      - key: RAZORPAY_PLAN_STARTER_ID
+        sync: false
+      - key: RAZORPAY_PLAN_GROWTH_ID
+        sync: false
+      - key: RAZORPAY_PLAN_BUSINESS_ID
+        sync: false
+      - key: ALLOW_PRODUCTION_SEED
+        value: "false"
+      - key: QR_STORAGE_PROVIDER
+        value: local
+      - key: UPLOAD_DIR
+        value: /var/data/uploads
+      - key: PORT
+        value: "10000"
+
+  - type: web
+    name: white-label-menu
+    runtime: static
+    buildCommand: npm ci --include=dev && npm run build -w @whitelabel/customer-web
+    staticPublishPath: ./apps/customer-web/dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: VITE_API_ORIGIN
+        sync: false
+      - key: VITE_DASHBOARD_ORIGIN
+        sync: false
+      - key: VITE_PRODUCT_NAME
+        value: Restaurant Platform
+      - key: VITE_SUPPORT_EMAIL
+        sync: false
+    headers:
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+
+  - type: web
+    name: white-label-dashboard
+    runtime: static
+    buildCommand: npm ci --include=dev && npm run build -w @whitelabel/restaurant-dashboard
+    staticPublishPath: ./apps/restaurant-dashboard/dist
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: NODE_VERSION
+        value: 22.22.0
+      - key: VITE_API_ORIGIN
+        sync: false
+      - key: VITE_CUSTOMER_ORIGIN
+        sync: false
+      - key: VITE_FIREBASE_API_KEY
+        sync: false
+      - key: VITE_FIREBASE_AUTH_DOMAIN
+        sync: false
+      - key: VITE_FIREBASE_PROJECT_ID
+        sync: false
+      - key: VITE_FIREBASE_APP_ID
+        sync: false
+      - key: VITE_FIREBASE_MESSAGING_SENDER_ID
+        sync: false
+      - key: VITE_FIREBASE_MEASUREMENT_ID
+        sync: false
+      - key: VITE_PRODUCT_NAME
+        value: Restaurant Platform
+      - key: VITE_SUPPORT_EMAIL
+        sync: false
+      - key: VITE_SALES_URL
+        sync: false
+      - key: VITE_BRAND_WORDMARK
+        value: /brand-wordmark.png
+    headers:
+      - path: /*
+        name: Strict-Transport-Security
+        value: max-age=31536000; includeSubDomains
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
