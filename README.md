@@ -60,10 +60,10 @@ Never commit the service-account file or JSON. Firebase web configuration is del
 
 Deploy `render.yaml` as a Blueprint in the Render workspace that should receive the bill. The Blueprint creates separately named resources in that workspace:
 
-- `white-label-api`
-- `white-label-menu`
-- `white-label-dashboard`
-- `white-label-db`
+- `grabtu-api`
+- `grabtu-web`
+- `grabtu-dashboard`
+- `grabtu-db`
 - a 1 GB persistent API disk for locally stored QR images
 
 Resources in the same Render workspace are billed together; they remain independently deployable and do not share data or credentials with the main KashNom product.
