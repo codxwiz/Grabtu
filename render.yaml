@@ -47,9 +47,9 @@ services:
       - key: CUSTOMER_ORIGIN
         value: https://grabtu.com
       - key: DASHBOARD_ORIGIN
-        value: https://grabtu-dashboard.onrender.com
+        value: https://dashboard.grabtu.com
       - key: MASTER_ADMIN_ORIGIN
-        value: https://grabtu-dashboard.onrender.com
+        value: https://dashboard.grabtu.com
       - key: MASTER_ADMIN_PHONE
         sync: false
       - key: VAPID_PUBLIC_KEY
