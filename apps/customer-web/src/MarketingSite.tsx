@@ -18,6 +18,24 @@ const legalCopy: Record<LegalPageKey, { title: string; paragraphs: string[] }> =
   refunds: { title: "Cancellation and refunds", paragraphs: ["Food-order cancellations and refunds are handled by the restaurant according to preparation status and its displayed policy.", "Subscription cancellation can be requested before renewal. Fees for a service period already started are not automatically refundable unless required by law or agreed in writing."] },
 };
 
+function useSpaNavigation() {
+  useEffect(() => {
+    function navigate(event: MouseEvent) {
+      if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      const target = event.target instanceof Element ? event.target.closest("a") : null;
+      if (!(target instanceof HTMLAnchorElement) || target.target || target.hasAttribute("download")) return;
+      const next = new URL(target.href, window.location.href);
+      if (next.origin !== window.location.origin) return;
+      event.preventDefault();
+      window.history.pushState({}, "", `${next.pathname}${next.search}${next.hash}`);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
+    document.addEventListener("click", navigate);
+    return () => document.removeEventListener("click", navigate);
+  }, []);
+}
+
 function Header({ dashboardHref, menuPreviewHref, currentPath }: SharedProps) {
   const [open, setOpen] = useState(false);
   return <header className="site-header"><a className="wordmark" href="/" aria-label={`${PRODUCT_NAME} home`}>{PRODUCT_NAME}<i>.</i></a><button className="menu-toggle" type="button" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? "Close" : "Menu"}</button><nav id="site-navigation" className={open ? "open" : ""} aria-label="Primary"><a className="mobile-home-link" href="/" aria-current={currentPath === "/" ? "page" : undefined}>Home</a>{nav.map(([label, href]) => <a key={label} href={label === "Menu" ? menuPreviewHref : href} aria-current={currentPath === href ? "page" : undefined}>{label}</a>)}</nav><a className="header-login" href={dashboardHref}>Restaurant login <span>↗</span></a></header>;
@@ -83,12 +101,14 @@ function NotFound() {
 }
 
 export function MarketingSite({ dashboardHref, menuPreviewHref, currentPath, page }: MarketingProps) {
+  useSpaNavigation();
   useEffect(() => { document.title = `${page === "home" ? "Restaurant OS" : page.replace("-", " ")} — ${PRODUCT_NAME}`; }, [page]);
   const shared = { dashboardHref, menuPreviewHref, currentPath };
   return <div className="marketing-shell"><Header {...shared} /><main>{page === "home" ? <Home {...shared} /> : page === "services" ? <Services {...shared} /> : page === "pricing" ? <Pricing {...shared} /> : page === "about" ? <About /> : page === "contact" ? <Contact /> : <NotFound />}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;
 }
 
 export function LegalPage({ kind, dashboardHref, menuPreviewHref, currentPath }: SharedProps & { kind: LegalPageKey }) {
+  useSpaNavigation();
   const copy = legalCopy[kind];
   useEffect(() => { document.title = `${copy.title} — ${PRODUCT_NAME}`; }, [copy.title]);
   return <div className="marketing-shell"><Header dashboardHref={dashboardHref} menuPreviewHref={menuPreviewHref} currentPath={currentPath} /><main className="legal-page"><p className="kicker">LEGAL</p><h1>{copy.title}</h1>{copy.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;

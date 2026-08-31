@@ -1,10 +1,13 @@
-.console-brand-copy .console-brand-wordmark {
-  display: block;
-  width: min(100%, 190px) !important;
-  height: auto !important;
-  object-fit: contain !important;
-  filter: none !important;
+.grabtu-wordmark {
+  color: #fff;
+  font-family: Manrope, Inter, system-ui, sans-serif;
+  font-size: 34px;
+  font-weight: 850;
+  letter-spacing: -0.075em;
+  line-height: 1;
 }
+
+.grabtu-wordmark span { color: #2dd4bf; }
 
 .console-brand-in-panel {
   min-height: 64px;
@@ -18,16 +21,20 @@
   justify-content: center;
 }
 
-body.console-theme-light .console-brand-copy .console-brand-wordmark {
-  filter: none;
-}
-
 .login .auth-wordmark {
   display: block;
-  width: min(170px, 48%);
-  height: auto;
-  object-fit: contain;
-  margin: 0 auto 2px;
+  width: auto;
+  margin: 0 auto 8px;
+  font-size: clamp(38px, 8vw, 52px);
+}
+
+.dashboard-gate-brand {
+  margin-bottom: 12px;
+  font-size: clamp(40px, 6vw, 64px);
+}
+
+body.console-theme-light .console-brand-in-panel .grabtu-wordmark {
+  color: #10151a;
 }
 
 .login {

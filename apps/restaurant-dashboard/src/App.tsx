@@ -12,8 +12,7 @@ import { disableDemoSession } from "./demo-mode";
 import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, MenuItem, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, SessionUser, StaffMember, SupportTicket } from "./types";
 
 const KdsPage = lazy(() => import("./KdsPage").then(module => ({ default: module.KdsPage })));
-const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Restaurant Platform";
-const BRAND_WORDMARK = import.meta.env.VITE_BRAND_WORDMARK || "/brand-wordmark.png";
+const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
 const THEME_KEY = "white_label_console_theme";
 type Page = "kds" | "menu" | "tables" | "payments" | "staff" | "settings" | "billing";
 
@@ -226,7 +225,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
   if (!user) {
     return <main className="dashboard-gate" aria-live="polite">
-      <img src={BRAND_WORDMARK} alt={PRODUCT_NAME} onError={event => { event.currentTarget.hidden = true; }} />
+      <div className="dashboard-gate-brand grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></div>
       {authLoading ? <><div className="loading-spinner" aria-hidden="true" /><h1>Opening your restaurant…</h1></> : <><h1>We couldn’t open the console</h1><p>{authError}</p><div><button onClick={() => void loadUser()}>Try again</button><button className="secondary-action" onClick={onLogout}>Return to sign in</button></div></>}
     </main>;
   }
@@ -237,7 +236,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
   return <div className={`console-shell theme-${theme}`} aria-busy={busy}><a className="skip-link" href="#console-main">Skip to main content</a><div className="console-body">
     <aside className="console-sidebar" aria-label="Restaurant navigation"><nav className="console-switcher">
-      <div className="console-brand console-brand-in-panel"><img className="console-brand-wordmark" src={BRAND_WORDMARK} alt="" onError={event => { event.currentTarget.hidden = true; }} /><strong>{PRODUCT_NAME}</strong></div>
+      <div className="console-brand console-brand-in-panel"><strong className="grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></strong></div>
       <div className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => setPage(item)}>{LABEL[item]}</button>)}</div>
       <button type="button" className="mobile-nav-signout" onClick={signOut}>Sign out</button>
     </nav></aside>

@@ -1,6 +1,6 @@
 {
-  "name": "White Label Restaurant Console",
-  "short_name": "White Label",
+  "name": "Grabtu Restaurant Console",
+  "short_name": "Grabtu",
   "description": "Live restaurant orders, kitchen display, tables, menu and payments.",
   "id": "/",
   "start_url": "/",
@@ -12,7 +12,7 @@
   "theme_color": "#17372b",
   "categories": ["business", "food", "productivity"],
   "icons": [
-    { "src": "/favicon.png", "sizes": "1254x1254", "type": "image/png", "purpose": "any" },
-    { "src": "/favicon.png", "sizes": "1254x1254", "type": "image/png", "purpose": "maskable" }
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }

@@ -4,8 +4,7 @@ import { API, TOKEN_KEY, ApiError, api } from "./api";
 import { DEMO_TOKEN, enableDemoSession } from "./demo-mode";
 import { getFirebaseAuth, hasFirebasePhoneAuthConfig } from "./firebase";
 
-const BRAND_LOGO = "/logo.png";
-const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Restaurant Platform";
+const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
 const RECAPTCHA_ID = "white-label-recaptcha";
 type Mode = "phone-login" | "phone-signup";
 type Plan = "starter" | "growth" | "business" | "pro";
@@ -170,7 +169,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
             subscription_id: data.providerSubscriptionId!,
             name: PRODUCT_NAME,
             description: `${signupPlans.find(option => option.id === plan)?.name || PRODUCT_NAME} plan · first charge after 14-day trial`,
-            image: "/favicon.png",
+            image: "/favicon.svg",
             prefill: { name: ownerName.trim(), contact: verifiedPhone || normalizePhone(phone) },
             theme: { color: "#17372b" },
             handler: response => resolve(response),
@@ -249,7 +248,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
       <form
         onSubmit={otpSent ? (verificationToken && mode === "phone-signup" ? continueWithVerifiedPhone : verifyPhoneCode) : sendPhoneOtp}
       >
-        <img className="auth-wordmark" src={BRAND_LOGO} alt={PRODUCT_NAME} />
+        <div className="auth-wordmark grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></div>
         <p>RESTAURANT CONSOLE</p>
         <h1>{mode === "phone-login" ? "SIGN IN WITH PHONE OTP." : "START YOUR 14-DAY FREE TRIAL."}</h1>
 

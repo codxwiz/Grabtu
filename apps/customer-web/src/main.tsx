@@ -200,11 +200,18 @@ function LoadingMenu() {
 }
 
 function App() {
+  const [, setRouteVersion] = useState(0);
+  useEffect(() => {
+    const rerender = () => setRouteVersion(value => value + 1);
+    window.addEventListener("popstate", rerender);
+    return () => window.removeEventListener("popstate", rerender);
+  }, []);
   const legalKind = getLegalRouteKind();
   const marketingKind = getMarketingRouteKind();
   const { isOrderingRoute } = getCustomerRoute();
   const menuPreviewHref = "/r/demo-bistro/table/T7";
-  const dashboardHref = import.meta.env.VITE_DASHBOARD_ORIGIN || `${location.protocol}//${location.hostname}:5174`;
+  const localDashboard = `${location.protocol}//${location.hostname}:5174`;
+  const dashboardHref = import.meta.env.VITE_DASHBOARD_ORIGIN || (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? localDashboard : "https://dashboard.grabtu.com");
   const currentPath = location.pathname;
 
   if (legalKind) {

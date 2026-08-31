@@ -1,5 +1,5 @@
-const CACHE = "white-label-dashboard-v7";
-const SHELL = ["/", "/manifest.webmanifest", "/favicon.png", "/logo.png", "/brand-wordmark.png?v=2", "/bell-clang-sound.mp3"];
+const CACHE = "grabtu-dashboard-v8";
+const SHELL = ["/", "/manifest.webmanifest", "/favicon.svg", "/bell-clang-sound.mp3"];
 
 self.addEventListener("install", event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)));
@@ -24,13 +24,13 @@ self.addEventListener("fetch", event => {
 });
 
 self.addEventListener("push", event => {
-  const message = event.data?.json() || { title: "Restaurant Platform update", body: "Open the restaurant console for details.", tag: "white_label-update", url: "/" };
+  const message = event.data?.json() || { title: "Grabtu update", body: "Open the restaurant console for details.", tag: "grabtu-update", url: "/" };
   event.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then(clients => {
     if (clients.some(client => client.visibilityState === "visible")) return;
     return self.registration.showNotification(message.title, {
       body: message.body,
-      icon: "/favicon.png",
-      badge: "/favicon.png",
+      icon: "/favicon.svg",
+      badge: "/favicon.svg",
       tag: message.tag,
       data: { url: message.url || "/", kind: message.kind },
       vibrate: [180, 80, 180],

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Grabtu">
+  <rect width="512" height="512" rx="112" fill="#090909"/>
+  <path fill="#fff" d="M266 96c-93 0-166 69-166 160s73 160 166 160c61 0 111-23 146-62V239H263v65h74v22c-18 17-41 25-70 25-53 0-91-39-91-95s38-95 91-95c33 0 59 12 80 36l53-49c-34-35-80-52-134-52Z"/>
+  <circle cx="409" cy="398" r="27" fill="#2dd4bf"/>
+</svg>

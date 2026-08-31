@@ -29,7 +29,7 @@ services:
       - key: TRUST_PROXY
         value: "1"
       - key: API_ORIGIN
-        value: https://api.grabtu.com
+        value: https://grabtu.onrender.com
       - key: DATABASE_URL
         fromDatabase:
           name: grabtu-db
@@ -47,9 +47,9 @@ services:
       - key: CUSTOMER_ORIGIN
         value: https://grabtu.com
       - key: DASHBOARD_ORIGIN
-        value: https://app.grabtu.com
+        value: https://grabtu-dashboard.onrender.com
       - key: MASTER_ADMIN_ORIGIN
-        value: https://app.grabtu.com
+        value: https://grabtu-dashboard.onrender.com
       - key: MASTER_ADMIN_PHONE
         sync: false
       - key: VAPID_PUBLIC_KEY
@@ -77,9 +77,9 @@ services:
       - key: NODE_VERSION
         value: 22.22.0
       - key: VITE_API_ORIGIN
-        value: https://api.grabtu.com
+        value: https://grabtu.onrender.com
       - key: VITE_DASHBOARD_ORIGIN
-        value: https://app.grabtu.com
+        value: https://dashboard.grabtu.com
       - key: VITE_PRODUCT_NAME
         value: Grabtu
       - key: VITE_SUPPORT_EMAIL
@@ -112,7 +112,7 @@ services:
       - key: NODE_VERSION
         value: 22.22.0
       - key: VITE_API_ORIGIN
-        value: https://api.grabtu.com
+        value: https://grabtu.onrender.com
       - key: VITE_CUSTOMER_ORIGIN
         value: https://grabtu.com
       - key: VITE_FIREBASE_API_KEY
