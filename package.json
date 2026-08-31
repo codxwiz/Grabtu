@@ -9,6 +9,7 @@
   "workspaces": ["apps/*", "services/*", "packages/*"],
   "scripts": {
     "dev": "node --env-file=.env node_modules/concurrently/dist/bin/concurrently.js -n api,menu,dashboard -c cyan,green,magenta \"npm run dev -w @whitelabel/api\" \"npm run dev -w @whitelabel/customer-web\" \"npm run dev -w @whitelabel/restaurant-dashboard\"",
+    "pretest": "npm run db:generate -w @whitelabel/api",
     "test": "node --import tsx --test services/api/src/*.test.ts apps/restaurant-dashboard/src/*.test.ts",
     "build": "npm run build --workspaces --if-present",
     "typecheck": "npm run typecheck --workspaces --if-present",
