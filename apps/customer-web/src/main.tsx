@@ -649,7 +649,7 @@ function CustomerMenuApp() {
     const currentStep = Math.max(0, steps.indexOf(order.status));
     return (
       <div className="customer-stage"><main className="phone tracking-phone">
-        <header className="phone-head"><h1>{menu.restaurant.name}</h1><div className="table-token"><span />{menu.table.label.toUpperCase()} · SCAN CONFIRMED</div></header>
+        <header className="phone-head">{slug === "demo-bistro" && <div className="guest-menu-navigation"><a href="/">← Back to home</a></div>}<h1>{menu.restaurant.name}</h1><div className="table-token"><span />{menu.table.label.toUpperCase()} · SCAN CONFIRMED</div></header>
         {order.status !== "served" ? <section className="status-screen">
           <div className="status-track"><i style={{ width: `${currentStep / (steps.length - 1) * 100}%` }} />
             {steps.map((status, index) => <div className="status-step" key={status}><b className={index < currentStep ? "done" : index === currentStep ? "current" : ""}>{index < currentStep ? "✓" : index + 1}</b><span>{status === "accepted" ? "Placed" : status}</span></div>)}
@@ -673,6 +673,7 @@ function CustomerMenuApp() {
     <div className="customer-stage" style={{ "--brand": menu.restaurant.brandColor || "#17372b" } as React.CSSProperties}>
       <div className="phone menu-phone">
         <header className="phone-head" style={menu.restaurant.coverImageUrl ? { backgroundImage: `linear-gradient(135deg, rgba(26,26,26,.9), rgba(44,44,44,.82)), url(${menu.restaurant.coverImageUrl})` } : undefined}>
+          {slug === "demo-bistro" && <div className="guest-menu-navigation"><a href="/">← Back to home</a></div>}
           <div className="restaurant-identity">
             {menu.restaurant.logoUrl && <img className="customer-restaurant-logo" src={menu.restaurant.logoUrl} alt={`${menu.restaurant.name} logo`} decoding="async" />}
             <div><h1>{menu.restaurant.name}</h1>{menu.restaurant.tagline && <p>{menu.restaurant.tagline}</p>}</div>

@@ -13,10 +13,12 @@ import { TablesPage } from "./TablesPage";
 import { disableDemoSession, isDemoSession } from "./demo-mode";
 import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, MenuItem, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, ServiceRequest, SessionUser, StaffMember, SupportTicket } from "./types";
 import { isOpenWaiterCall, isWaiterCall, useWaiterAlertSound, WaiterAlertControls, WaiterAlertStack } from "./WaiterAlerts";
+import { useAlertSound } from "./AlertSounds";
 
 const KdsPage = lazy(() => import("./KdsPage").then(module => ({ default: module.KdsPage })));
 const THEME_KEY = "white_label_console_theme";
 type Page = "kds" | "requests" | "menu" | "tables" | "payments" | "staff" | "settings" | "billing";
+type KdsTicketSummary = { order: { displayId: string } };
 
 // This mirrors the API's effective route authorization. Read-only roles can
 // inspect their workspace, while mutation controls are gated independently.
@@ -69,13 +71,16 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [waiterRequests, setWaiterRequests] = useState<ServiceRequest[]>([]);
   const [waiterBusyId, setWaiterBusyId] = useState<string | null>(null);
+  const [kdsOrderCount, setKdsOrderCount] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const successTimer = useRef<number | null>(null);
   const errorTimer = useRef<number | null>(null);
   const seenWaiterRequests = useRef(new Set<string>());
+  const seenOrders = useRef(new Set<string>());
   const waiterSound = useWaiterAlertSound();
+  const orderSound = useAlertSound("order", "double-chime");
   const role = user?.role.toUpperCase() || "";
   const restaurantId = user?.restaurant.id || "";
   const visiblePages = role ? (ACCESS[role] || []) : [];
@@ -86,6 +91,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const canPrepare = Boolean(user?.capabilities?.includes("orders.prepare"));
   const canVerifyPayments = Boolean(user?.capabilities?.includes("payments.confirm"));
   const canReceiveWaiterCalls = ["OWNER", "MANAGER", "SUPERVISOR", "WAITER"].includes(role);
+  const canReceiveOrderAlerts = visiblePages.includes("kds");
 
   const clearFeedbackTimers = useCallback(() => {
     if (successTimer.current !== null) window.clearTimeout(successTimer.current);
@@ -181,6 +187,10 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     setServiceRequests(calls);
     setWaiterRequests(calls.filter(isOpenWaiterCall));
   }, [token]);
+  const loadKdsOrderCount = useCallback(async () => {
+    const tickets = await api<KdsTicketSummary[]>("/api/admin/kds/tickets", token);
+    setKdsOrderCount(new Set(tickets.map(ticket => ticket.order.displayId)).size);
+  }, [token]);
   const loadSettings = useCallback(async () => {
     const [profile, limits, tickets] = await Promise.all([
       api<RestaurantSettings>("/api/admin/settings", token),
@@ -207,7 +217,14 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     void loadWaiterRequests().catch(() => undefined);
   }, [canReceiveWaiterCalls, loadWaiterRequests, restaurantId]);
   useEffect(() => {
-    if (!restaurantId || !canReceiveWaiterCalls || isDemoSession(token)) return;
+    if (!restaurantId || !canReceiveOrderAlerts) {
+      setKdsOrderCount(0);
+      return;
+    }
+    void loadKdsOrderCount().catch(() => undefined);
+  }, [canReceiveOrderAlerts, loadKdsOrderCount, restaurantId]);
+  useEffect(() => {
+    if (!restaurantId || (!canReceiveWaiterCalls && !canReceiveOrderAlerts) || isDemoSession(token)) return;
     let cancelled = false;
     let closeSocket: (() => void) | null = null;
     const onNewRequest = (request: ServiceRequest) => {
@@ -218,6 +235,14 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
         seenWaiterRequests.current.add(request.id);
         void waiterSound.play();
       }
+    };
+    const onNewOrder = (order: Order) => {
+      if (!canReceiveOrderAlerts || seenOrders.current.has(order.id)) return;
+      seenOrders.current.add(order.id);
+      setKdsOrderCount(current => current + 1);
+      void orderSound.play();
+      showSuccess(`New order ${order.id} · ${order.tableLabel}`);
+      void loadKdsOrderCount().catch(() => undefined);
     };
     const onUpdatedRequest = (request: ServiceRequest) => {
       if (!isWaiterCall(request)) return;
@@ -233,15 +258,26 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
       if (cancelled) return;
       const socket = io(API, { auth: { token } });
       closeSocket = () => socket.close();
-      socket.on("connect", () => { void loadWaiterRequests().catch(() => undefined); });
-      socket.on("service-request:new", onNewRequest);
-      socket.on("service-request:updated", onUpdatedRequest);
+      socket.on("connect", () => {
+        if (canReceiveWaiterCalls) void loadWaiterRequests().catch(() => undefined);
+        if (canReceiveOrderAlerts) void loadKdsOrderCount().catch(() => undefined);
+      });
+      if (canReceiveWaiterCalls) {
+        socket.on("service-request:new", onNewRequest);
+        socket.on("service-request:updated", onUpdatedRequest);
+      }
+      if (canReceiveOrderAlerts) {
+        socket.on("order:new", onNewOrder);
+        socket.on("restaurant:sync", (event: { scope?: string }) => {
+          if (event.scope === "kds.ticket") void loadKdsOrderCount().catch(() => undefined);
+        });
+      }
     });
     return () => {
       cancelled = true;
       closeSocket?.();
     };
-  }, [canReceiveWaiterCalls, loadWaiterRequests, restaurantId, token, waiterSound.play]);
+  }, [canReceiveOrderAlerts, canReceiveWaiterCalls, loadKdsOrderCount, loadWaiterRequests, orderSound.play, restaurantId, showSuccess, token, waiterSound.play]);
   useEffect(() => {
     if (!user) return;
     if (!visiblePages.includes(page)) setPage(visiblePages[0] || "kds");
@@ -327,7 +363,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     <aside className={`console-sidebar ${mobileNavOpen ? "mobile-open" : ""}`} aria-label="Restaurant navigation"><nav className="console-switcher">
       <div className="console-brand console-brand-in-panel"><BrandLogo className="console-brand-logo" /></div>
       <button className="console-nav-toggle" type="button" aria-expanded={mobileNavOpen} aria-controls="console-page-menu" onClick={() => setMobileNavOpen(open => !open)}><span className="console-nav-toggle-icon" aria-hidden="true"><i /><i /><i /></span>{mobileNavOpen ? "Close" : "Menu"}</button>
-      <div id="console-page-menu" className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => { setPage(item); setMobileNavOpen(false); }}>{LABEL[item]}{item === "requests" && waiterRequests.length > 0 && <span className="nav-badge" aria-label={`${waiterRequests.length} waiting`}>{waiterRequests.length}</span>}</button>)}</div>
+      <div id="console-page-menu" className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => { setPage(item); setMobileNavOpen(false); }}>{LABEL[item]}{item === "kds" && kdsOrderCount > 0 && <span className="nav-badge" aria-label={`${kdsOrderCount} open orders`}>{kdsOrderCount}</span>}{item === "requests" && waiterRequests.length > 0 && <span className="nav-badge" aria-label={`${waiterRequests.length} waiting`}>{waiterRequests.length}</span>}</button>)}</div>
       <button type="button" className="mobile-nav-signout" onClick={() => { setMobileNavOpen(false); signOut(); }}>Sign out</button>
     </nav></aside>
     <main id="console-main" tabIndex={-1} className={`console-view page-${page}`}><header className="console-header"><div><p>{user.restaurant.name}</p><h1>{LABEL[page]}</h1></div><div className="header-actions">
@@ -336,8 +372,8 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     <WaiterAlertStack requests={waiterRequests} busyId={waiterBusyId} onAcknowledge={request => { void acknowledgeWaiterRequest(request); }} onDismiss={request => setWaiterRequests(current => current.filter(entry => entry.id !== request.id))} />
     {error && <div className="error console-prompt" role="alert">{error}</div>}{success && <div className="toast-inline console-prompt" role="status">{success}</div>}
     <Suspense fallback={<section className="operations-card" aria-live="polite"><p>Loading workspace…</p></section>}>
-      {page === "kds" && <KdsPage token={token} canManage={Boolean(user.capabilities?.includes("kds.manage"))} canPrepare={canPrepare} onMessage={notifyFromKds} />}
-      {page === "requests" && <ServiceRequestsPage requests={serviceRequests} busyId={waiterBusyId} onAcknowledge={request => { void acknowledgeWaiterRequest(request); }} onResolve={request => { void resolveWaiterRequest(request); }} />}
+      {page === "kds" && <KdsPage token={token} canManage={Boolean(user.capabilities?.includes("kds.manage"))} canPrepare={canPrepare} onMessage={notifyFromKds} orderSound={orderSound.sound} orderSoundBlocked={orderSound.blocked} onOrderSoundChange={orderSound.setSound} onTestOrderSound={() => { void orderSound.test(); }} onOrderCountChange={setKdsOrderCount} />}
+      {page === "requests" && <ServiceRequestsPage requests={serviceRequests} busyId={waiterBusyId} serviceSound={waiterSound.sound} serviceSoundBlocked={waiterSound.blocked} onServiceSoundChange={waiterSound.setSound} onTestServiceSound={() => { void waiterSound.test(); }} onAcknowledge={request => { void acknowledgeWaiterRequest(request); }} onResolve={request => { void resolveWaiterRequest(request); }} />}
       {page === "menu" && <MenuPage categories={categories} canManage={canManageMenu} onAddCategory={data => mutate(async () => { await api("/api/admin/menu/categories", token, { method: "POST", body: JSON.stringify(data) }); await loadMenu(); })} onSaveItem={saveItem} onDeleteItem={item => mutate(async () => { await api(`/api/admin/menu/items/${item.id}`, token, { method: "DELETE" }); await loadMenu(); })} onSaveOption={(itemId, data) => mutate(async () => { await api(`/api/admin/menu/items/${itemId}/options`, token, { method: "POST", body: JSON.stringify(data) }); await loadMenu(); })} onUpload={safeUploadAsset} />}
       {page === "tables" && <TablesPage tables={tables} canManage={canManageTables} onAdd={data => mutate(async () => { await api("/api/admin/tables", token, { method: "POST", body: JSON.stringify(data) }); await loadTables(); })} onEdit={(table, data) => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "PATCH", body: JSON.stringify(data) }); await loadTables(); })} onToggle={table => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "PATCH", body: JSON.stringify({ isActive: !table.isActive }) }); await loadTables(); })} onDelete={table => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "DELETE" }); await loadTables(); })} onQr={table => api(`/api/admin/tables/${table.id}/qr`, token)} />}
       {page === "payments" && <PaymentsPage methods={payments} cardMerchant={cardMerchant} verificationOrders={verificationOrders} canConfigureUpi={canConfigureUpi} canConfigureCard={canConfigureCard} canVerifyPayments={canVerifyPayments} onAdd={data => mutate(async () => { await api("/api/admin/payment-methods", token, { method: "POST", body: JSON.stringify(data) }); await loadPayments(); })} onToggle={method => mutate(async () => { await api(`/api/admin/payment-methods/${method.id}`, token, { method: "PATCH", body: JSON.stringify({ isActive: !method.isActive }) }); await loadPayments(); })} onDelete={method => mutate(async () => { await api(`/api/admin/payment-methods/${method.id}`, token, { method: "DELETE" }); await loadPayments(); })} onConnectCard={data => mutate(async () => { setCardMerchant(await api<CardMerchantConfig>("/api/admin/card-merchant", token, { method: "PUT", body: JSON.stringify(data) })); })} onDisconnectCard={() => mutate(async () => { await api("/api/admin/card-merchant", token, { method: "DELETE" }); await loadPayments(); })} onVerifyPayment={(order, paymentStatus) => mutate(async () => { await api(`/api/orders/${order.id}/payment-status`, token, { method: "PATCH", body: JSON.stringify({ status: paymentStatus }) }); await loadVerificationOrders(); }, paymentStatus === "paid" ? "Payment confirmed" : "Payment returned to pending")} onRefreshVerification={loadVerificationOrders} />}

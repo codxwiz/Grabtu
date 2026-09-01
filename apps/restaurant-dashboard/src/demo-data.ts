@@ -94,8 +94,8 @@ const state: DemoState = {
     ],
     plans: [
       { plan: "starter", amount: 1499, currency: "INR", limits: { tables: 5, staff: 2, menuItems: 15, analyticsDays: 7 } },
-      { plan: "growth", amount: 3499, currency: "INR", limits: { tables: 20, staff: 6, menuItems: 45, analyticsDays: 30 } },
-      { plan: "business", amount: 7999, currency: "INR", limits: { tables: 60, staff: 20, menuItems: 150, analyticsDays: 90 } },
+      { plan: "growth", amount: 3499, currency: "INR", limits: { tables: 15, staff: 6, menuItems: 45, analyticsDays: 30 } },
+      { plan: "business", amount: 7999, currency: "INR", limits: { tables: 30, staff: 20, menuItems: 150, analyticsDays: 90 } },
     ],
   },
   payments: [
@@ -603,7 +603,7 @@ export async function demoRequest<T>(path: string, init: RequestInit = {}): Prom
   if (path === "/api/admin/billing") return respond(state.billing) as T;
   if (path === "/api/admin/billing/checkout" && method === "POST") {
     const plan = String(body?.plan || "starter");
-    const limits = plan === "growth" ? { tables: 20, staff: 6, menuItems: 45, analyticsDays: 30 } : plan === "business" ? { tables: 60, staff: 20, menuItems: 150, analyticsDays: 90 } : { tables: 5, staff: 2, menuItems: 15, analyticsDays: 7 };
+    const limits = plan === "growth" ? { tables: 15, staff: 6, menuItems: 45, analyticsDays: 30 } : plan === "business" ? { tables: 30, staff: 20, menuItems: 150, analyticsDays: 90 } : { tables: 5, staff: 2, menuItems: 15, analyticsDays: 7 };
     state.settings.plan = plan;
     state.settings.planStatus = "trialing";
     state.settings.featuresLocked = false;

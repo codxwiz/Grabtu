@@ -1,8 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
 import type { ServiceRequest } from "./types";
-
-const SOUND_KEY = "grabtu_waiter_alert_sound";
-const SOUND_URL = "/alerts/waiter-bell.mp3";
+import { useAlertSound } from "./AlertSounds";
 
 export function isWaiterCall(request: ServiceRequest) {
   const type = request.type.trim().toUpperCase();
@@ -14,101 +11,7 @@ export function isOpenWaiterCall(request: ServiceRequest) {
 }
 
 export function useWaiterAlertSound() {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [enabled, setEnabled] = useState(() => localStorage.getItem(SOUND_KEY) !== "off");
-  const [blocked, setBlocked] = useState(false);
-
-  useEffect(() => {
-    const audio = new Audio(SOUND_URL);
-    audio.preload = "auto";
-    audio.volume = 0.9;
-    audioRef.current = audio;
-    return () => {
-      audio.pause();
-      audioRef.current = null;
-    };
-  }, []);
-
-  const play = useCallback(async () => {
-    if (!enabled || !audioRef.current) return false;
-    try {
-      audioRef.current.muted = false;
-      audioRef.current.currentTime = 0;
-      await audioRef.current.play();
-      setBlocked(false);
-      return true;
-    } catch {
-      setBlocked(true);
-      return false;
-    }
-  }, [enabled]);
-
-  useEffect(() => {
-    if (!enabled) return;
-    const removePrimeListeners = () => {
-      window.removeEventListener("pointerdown", prime, true);
-      window.removeEventListener("keydown", prime, true);
-    };
-    const prime = () => {
-      const audio = audioRef.current;
-      if (!audio) return;
-      audio.muted = true;
-      void audio.play().then(() => {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.muted = false;
-        setBlocked(false);
-        removePrimeListeners();
-      }).catch(() => setBlocked(true));
-    };
-    window.addEventListener("pointerdown", prime, true);
-    window.addEventListener("keydown", prime, true);
-    return removePrimeListeners;
-  }, [enabled]);
-
-  const toggle = useCallback(async () => {
-    if (enabled && blocked) {
-      await play();
-      return;
-    }
-    const next = !enabled;
-    setEnabled(next);
-    setBlocked(false);
-    localStorage.setItem(SOUND_KEY, next ? "on" : "off");
-    if (next) {
-      const audio = audioRef.current;
-      if (audio) {
-        audio.currentTime = 0;
-        try {
-          await audio.play();
-          setBlocked(false);
-        } catch {
-          setBlocked(true);
-        }
-      }
-    }
-  }, [blocked, enabled, play]);
-
-  const test = useCallback(async () => {
-    if (!enabled) {
-      setEnabled(true);
-      localStorage.setItem(SOUND_KEY, "on");
-      const audio = audioRef.current;
-      if (audio) {
-        audio.currentTime = 0;
-        try {
-          await audio.play();
-          setBlocked(false);
-        } catch {
-          setBlocked(true);
-        }
-      }
-      return;
-    }
-    await play();
-  }, [enabled, play]);
-
-  return { enabled, blocked, play, test, toggle };
+  return useAlertSound("service", "bell");
 }
 
 function BellIcon() {

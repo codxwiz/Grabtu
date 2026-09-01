@@ -1,4 +1,5 @@
 import type { ServiceRequest } from "./types";
+import { AlertSoundPicker, type AlertSoundId } from "./AlertSounds";
 
 function BellIcon() {
   return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9Z" /><path d="M10 21h4" /></svg>;
@@ -8,9 +9,13 @@ function statusLabel(status: string) {
   return status.trim().toUpperCase() === "ACKNOWLEDGED" ? "Acknowledged" : "Waiting";
 }
 
-export function ServiceRequestsPage({ requests, busyId, onAcknowledge, onResolve }: {
+export function ServiceRequestsPage({ requests, busyId, serviceSound, serviceSoundBlocked, onServiceSoundChange, onTestServiceSound, onAcknowledge, onResolve }: {
   requests: ServiceRequest[];
   busyId: string | null;
+  serviceSound: AlertSoundId;
+  serviceSoundBlocked: boolean;
+  onServiceSoundChange: (sound: AlertSoundId) => void;
+  onTestServiceSound: () => void;
   onAcknowledge: (request: ServiceRequest) => void;
   onResolve: (request: ServiceRequest) => void;
 }) {
@@ -21,7 +26,7 @@ export function ServiceRequestsPage({ requests, busyId, onAcknowledge, onResolve
   return <div className="service-requests-page">
     <section className="service-requests-hero" aria-labelledby="service-requests-title">
       <div><p className="eyebrow">GUEST SERVICE</p><h2 id="service-requests-title">Call waiter queue</h2><p>Every active guest call is collected here while live alerts continue across the dashboard.</p></div>
-      <div className="service-request-metrics" aria-label="Service request summary"><span><b>{openCount}</b>Waiting</span><span><b>{acknowledgedCount}</b>Acknowledged</span></div>
+      <div className="service-request-hero-controls"><AlertSoundPicker label="Service request alert" value={serviceSound} blocked={serviceSoundBlocked} onChange={onServiceSoundChange} onTest={onTestServiceSound}/><div className="service-request-metrics" aria-label="Service request summary"><span><b>{openCount}</b>Waiting</span><span><b>{acknowledgedCount}</b>Acknowledged</span></div></div>
     </section>
 
     <section className="service-request-queue" aria-label="Call waiter requests">

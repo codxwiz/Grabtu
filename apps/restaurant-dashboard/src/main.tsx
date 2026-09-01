@@ -17,6 +17,7 @@ import "./qr-modal-overrides.css";
 import "./offline.css";
 import "./waiter-alerts.css";
 import "./service-requests.css";
+import "./alert-sounds.css";
 import "./dashboard-polish.css";
 
 createRoot(document.getElementById("root")!).render(
