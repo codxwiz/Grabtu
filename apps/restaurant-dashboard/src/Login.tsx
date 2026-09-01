@@ -5,7 +5,6 @@ import { DEMO_TOKEN, enableDemoSession } from "./demo-mode";
 import { getFirebaseAuth, hasFirebasePhoneAuthConfig } from "./firebase";
 
 const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
-const RECAPTCHA_ID = "white-label-recaptcha";
 type Mode = "phone-login" | "phone-signup";
 type Plan = "starter" | "growth" | "business" | "pro";
 type PhoneConfirmation = { confirm(code: string): Promise<{ user: { getIdToken(): Promise<string>; phoneNumber?: string | null } }> };
@@ -83,14 +82,23 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
   const [mandateConsent, setMandateConsent] = useState(false);
   const [demoAvailable, setDemoAvailable] = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
+  const recaptchaElementRef = useRef<HTMLDivElement | null>(null);
   const confirmationRef = useRef<PhoneConfirmation | null>(null);
+
+  function clearRecaptchaVerifier() {
+    try {
+      recaptchaRef.current?.clear();
+    } catch {
+      // Firebase may already have released the verifier after a failed request.
+    }
+    recaptchaRef.current = null;
+    recaptchaElementRef.current?.remove();
+    recaptchaElementRef.current = null;
+  }
 
   useEffect(() => {
     setDemoAvailable(import.meta.env.DEV || window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1");
-    return () => {
-      recaptchaRef.current?.clear();
-      recaptchaRef.current = null;
-    };
+    return clearRecaptchaVerifier;
   }, []);
 
   function resetPhoneFlow() {
@@ -101,8 +109,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
     confirmationRef.current = null;
     setError("");
     setNotice("");
-    recaptchaRef.current?.clear();
-    recaptchaRef.current = null;
+    clearRecaptchaVerifier();
   }
 
   function switchMode(next: Mode) {
@@ -115,10 +122,15 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
   function getRecaptchaVerifier() {
     const auth = getFirebaseAuth();
     if (!auth) throw new Error("Firebase phone auth is not configured yet");
-    if (!recaptchaRef.current) {
-      recaptchaRef.current = new RecaptchaVerifier(auth, RECAPTCHA_ID, { size: "invisible" });
-    }
-    return recaptchaRef.current;
+    clearRecaptchaVerifier();
+    const element = document.createElement("div");
+    element.className = "recaptcha-slot";
+    element.setAttribute("aria-hidden", "true");
+    document.body.appendChild(element);
+    recaptchaElementRef.current = element;
+    const verifier = new RecaptchaVerifier(auth, element, { size: "invisible" });
+    recaptchaRef.current = verifier;
+    return verifier;
   }
 
   async function sendPhoneOtp(event: FormEvent<HTMLFormElement>) {
@@ -147,6 +159,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : "Could not send the phone verification code");
     } finally {
+      clearRecaptchaVerifier();
       setBusy(false);
     }
   }
@@ -349,8 +362,6 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
 
         {error && <div className="error" role="alert">{error}</div>}
         {notice && <div role="status" className="toast-inline">{notice}</div>}
-
-        <div id={RECAPTCHA_ID} className="recaptcha-slot" aria-hidden="true" />
 
         {!otpSent ? (
           <button disabled={busy}>{busy ? "Sending code…" : mode === "phone-signup" ? "Send code to create trial" : "Send code to sign in"}</button>
