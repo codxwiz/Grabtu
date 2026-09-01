@@ -60,6 +60,7 @@ const state: DemoState = {
     restaurant: { id: "rest_demo", name: "The Saffron Table", slug: "demo-bistro" },
   },
   settings: {
+    name: "The Saffron Table",
     orderingEnabled: true,
     orderPauseMessage: "",
     taxPercent: 5,
@@ -592,6 +593,7 @@ export async function demoRequest<T>(path: string, init: RequestInit = {}): Prom
   if (path === "/api/admin/settings") {
     if (method === "PATCH") {
       Object.assign(state.settings, body || {});
+      state.user.restaurant.name = state.settings.name;
       return respond(state.settings) as T;
     }
     return respond(state.settings) as T;

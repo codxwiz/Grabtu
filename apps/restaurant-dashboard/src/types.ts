@@ -17,7 +17,7 @@ export type PaymentMethodAdmin={id:string;provider:string;displayName:string;upi
 export type CardMerchantConfig={provider:string;maskedKeyId:string;connected:boolean;enabled:boolean;testMode:boolean;webhookUrl:string;webhookSecret?:string;verifiedAt?:string|null};
 export type StaffMember={id:string;name:string;phone?:string|null;firebaseUid?:string|null;role:string;isActive:boolean;createdAt:string;lastLoginAt?:string};
 export type Analytics={days:number;from:string;to:string;totalOrders:number;revenue:number;daily:{date:string;orders:number;revenue:number}[];topItems:{name:string;quantity:number;revenue:number}[]};
-export type RestaurantSettings={orderingEnabled:boolean;orderPauseMessage:string;taxPercent:number;serviceChargePercent:number;plan:string;planStatus:string;trialEndsAt?:string|null;featuresLocked?:boolean;featureLockReason?:string|null;logoUrl?:string;coverImageUrl?:string;brandColor?:string};
+export type RestaurantSettings={name:string;orderingEnabled:boolean;orderPauseMessage:string;taxPercent:number;serviceChargePercent:number;plan:string;planStatus:string;trialEndsAt?:string|null;featuresLocked?:boolean;featureLockReason?:string|null;logoUrl?:string;coverImageUrl?:string;brandColor?:string};
 export type ServiceRequest={id:string;tableId:string;tableLabel?:string;tableCode?:string;type:string;note?:string;status:string;createdAt:string};
 export type Entitlements={
   plan:string;accessLevel?:"standard"|"enterprise";planStatus:string;trialEndsAt?:string|null;featuresLocked?:boolean;featureLockReason?:string|null;

@@ -416,6 +416,9 @@ color:#b77720!important
 .page-settings .field-label{gap:8px!important;margin-top:16px!important;font-size:15px!important;letter-spacing:.03em!important}
 .page-settings .field-label input,.page-settings .field-label textarea{padding:15px 16px!important;border-radius:14px!important;font-size:16px!important;line-height:1.5!important}
 .page-settings .field-label>small{font-size:14px!important;line-height:1.45!important}
+.page-settings .brand-name-field{margin-top:0!important;margin-bottom:18px!important}
+.page-settings .field-label input[aria-invalid="true"]{border-color:#e27b6c!important;box-shadow:0 0 0 3px rgba(226,123,108,.14)!important}
+.page-settings .field-label>.field-error{color:#ff9d90!important}
 .page-settings .charge-fields{gap:16px!important}
 .page-settings .input-suffix{right:14px!important;top:39px!important;font-size:14px!important}
 .page-settings .charge-fields input{padding-right:38px!important}
@@ -477,6 +480,7 @@ body.console-theme-light .page-settings .entitlement-caption,
 body.console-theme-light .page-settings .premium-limits small,
 body.console-theme-light .page-settings .settings-tip p{color:#69746d!important}
 body.console-theme-light .page-settings .field-label{color:#506056!important}
+body.console-theme-light .page-settings .field-label>.field-error{color:#a62f22!important}
 body.console-theme-light .page-settings .feature-lock-banner{background:#fbebe7!important;border-color:#efc1b6!important}
 body.console-theme-light .page-settings .entitlement-card{background:linear-gradient(180deg,#ffffff,#f7f8f4)!important;border-color:#dbe1d9!important;box-shadow:0 12px 28px rgba(36,46,36,.08)!important;color:#202820!important}
 body.console-theme-light .page-settings .entitlement-heading .eyebrow{color:#168b7a!important;font-size:14px!important;letter-spacing:.08em!important}

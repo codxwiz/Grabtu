@@ -6,18 +6,23 @@ import { SupportTicketsCard } from "./SupportTicketsCard";
 type Props = { settings: RestaurantSettings; entitlements: Entitlements; supportTickets: SupportTicket[]; canOpenBilling: boolean; onCreateSupportTicket: (data: { subject: string; category: string; priority: string; message: string }) => Promise<boolean>; onSave: (data: Partial<RestaurantSettings>) => Promise<boolean>; onUpload?: (kind: "logo" | "cover", file: File) => Promise<string | null>; onOpenBilling: () => void };
 function readFile(file: File) { return new Promise<string>((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(String(reader.result)); reader.onerror = () => reject(new Error("Could not read image")); reader.readAsDataURL(file); }); }
 const planName = (value: string) => value.toLowerCase() === "business" || value.toLowerCase() === "pro" ? "BUSINESS" : value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+const restaurantNameError = (value: string) => value.trim().length < 2 ? "Enter at least 2 characters." : value.trim().length > 80 ? "Keep the name under 80 characters." : "";
 
 export function SettingsPage({ settings, entitlements, supportTickets, canOpenBilling, onCreateSupportTicket, onSave, onUpload, onOpenBilling }: Props) {
+  const [restaurantName, setRestaurantName] = useState(settings.name);
   const [logoUrl, setLogoUrl] = useState(settings.logoUrl || "");
   const [coverImageUrl, setCoverImageUrl] = useState(settings.coverImageUrl || "");
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState<"logo" | "cover" | "">("");
   const [message, setMessage] = useState("");
   const [localError, setLocalError] = useState("");
+  const [nameError, setNameError] = useState("");
   useEffect(() => {
+    setRestaurantName(settings.name);
     setLogoUrl(settings.logoUrl || "");
     setCoverImageUrl(settings.coverImageUrl || "");
-  }, [settings.coverImageUrl, settings.logoUrl]);
+    setNameError("");
+  }, [settings.coverImageUrl, settings.logoUrl, settings.name]);
   useEffect(() => {
     if (!message) return;
     const timeout = window.setTimeout(() => setMessage(""), 2000);
@@ -48,10 +53,15 @@ export function SettingsPage({ settings, entitlements, supportTickets, canOpenBi
   }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault(); setSaving(true); setMessage("");
+    event.preventDefault(); setMessage("");
+    const nextName = restaurantName.trim();
+    const nextNameError = restaurantNameError(nextName);
+    setNameError(nextNameError);
+    if (nextNameError) return;
+    setSaving(true);
     const data = new FormData(event.currentTarget);
     try {
-      const ok = await onSave({ orderingEnabled: data.get("orderingEnabled") === "on", orderPauseMessage: String(data.get("orderPauseMessage") || ""), taxPercent: Math.round(Number(data.get("taxPercent"))), serviceChargePercent: Math.round(Number(data.get("serviceChargePercent"))), logoUrl, coverImageUrl, brandColor: String(data.get("brandColor") || "#17372b") });
+      const ok = await onSave({ name: nextName, orderingEnabled: data.get("orderingEnabled") === "on", orderPauseMessage: String(data.get("orderPauseMessage") || ""), taxPercent: Math.round(Number(data.get("taxPercent"))), serviceChargePercent: Math.round(Number(data.get("serviceChargePercent"))), logoUrl, coverImageUrl, brandColor: String(data.get("brandColor") || "#17372b") });
       if (ok) setMessage("Restaurant settings saved successfully.");
     } finally { setSaving(false); }
   }
@@ -61,6 +71,7 @@ export function SettingsPage({ settings, entitlements, supportTickets, canOpenBi
       <div className="settings-panel-heading"><div><p className="eyebrow">RESTAURANT PROFILE</p><h2>Brand and ordering</h2><p>Customize the experience guests see when they scan a table QR.</p></div><span className="settings-status"><i /> Live</span></div>
 
       <section className="settings-section"><div className="settings-section-title"><span className="settings-section-icon">✦</span><div><h3>Guest-facing brand</h3><p>Use your own identity across the customer menu.</p></div></div>
+        <label className="field-label brand-name-field">Company / restaurant name<input name="name" value={restaurantName} onChange={event => { const value = event.target.value; setRestaurantName(value); setNameError(restaurantNameError(value)); }} onBlur={() => setNameError(restaurantNameError(restaurantName))} minLength={2} maxLength={80} autoComplete="organization" aria-invalid={Boolean(nameError)} aria-describedby={`restaurant-name-help${nameError ? " restaurant-name-error" : ""}`} required /><small id="restaurant-name-help">Shown to guests on your QR menu, orders, and payment screens.</small>{nameError && <small id="restaurant-name-error" className="field-error" role="alert">{nameError}</small>}</label>
         <div className="asset-grid">
           <div className="asset-upload-card"><div className={`asset-preview logo-preview ${logoUrl ? "has-image" : ""}`}>{logoUrl ? <img src={logoUrl} alt="Restaurant logo preview" /> : <span>LOGO</span>}</div><div className="asset-copy"><b>Restaurant logo</b><small>Square PNG, JPG, or WebP · max 3 MB</small><label className={`upload-button ${uploading === "logo" ? "disabled" : ""}`}>{uploading === "logo" ? "Uploading…" : logoUrl ? "Replace logo" : "Upload logo"}<input type="file" disabled={Boolean(uploading)} accept="image/png,image/jpeg,image/webp" onChange={event => void upload("logo", event)} /></label></div></div>
           <div className="asset-upload-card cover-asset"><div className={`asset-preview cover-preview ${coverImageUrl ? "has-image" : ""}`} style={coverImageUrl ? { backgroundImage: `url(${coverImageUrl})` } : undefined}>{!coverImageUrl && <span>COVER</span>}</div><div className="asset-copy"><b>Menu cover image</b><small>Wide PNG, JPG, or WebP · max 3 MB</small><label className={`upload-button ${uploading === "cover" ? "disabled" : ""}`}>{uploading === "cover" ? "Uploading…" : coverImageUrl ? "Replace cover" : "Upload cover"}<input type="file" disabled={Boolean(uploading)} accept="image/png,image/jpeg,image/webp" onChange={event => void upload("cover", event)} /></label></div></div>

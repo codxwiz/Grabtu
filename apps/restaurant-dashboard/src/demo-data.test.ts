@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { demoRequest } from "./demo-data";
-import type { Category, MenuItemOption, PaymentMethodAdmin, SessionUser, StaffMember } from "./types";
+import type { Category, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, SessionUser, StaffMember } from "./types";
 
 test("demo owner can prepare orders and confirm payments", async () => {
   const user = await demoRequest<SessionUser>("/api/auth/me");
@@ -35,4 +35,14 @@ test("demo staff members can be created", async () => {
   assert.equal(created.name, "Test Staff");
   const staff = await demoRequest<StaffMember[]>("/api/admin/staff");
   assert.equal(staff.some(member => member.id === created.id), true);
+});
+
+test("demo restaurant name updates across settings and session", async () => {
+  const settings = await demoRequest<RestaurantSettings>("/api/admin/settings", {
+    method: "PATCH",
+    body: JSON.stringify({ name: "Demo Company" }),
+  });
+  const user = await demoRequest<SessionUser>("/api/auth/me");
+  assert.equal(settings.name, "Demo Company");
+  assert.equal(user.restaurant.name, "Demo Company");
 });

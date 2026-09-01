@@ -6,6 +6,58 @@
   --console-touch: 44px;
 }
 
+/* Match the public website's compact circular theme selector. */
+.console-shell .header-actions button.theme-toggle:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control) {
+  display: grid !important;
+  place-items: center !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  padding: 0 !important;
+  border: 1px solid #3a3a3a !important;
+  border-radius: 999px !important;
+  background: #151515 !important;
+  color: #bdd65d !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.console-shell .header-actions button.theme-toggle:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control):hover:not(:disabled) {
+  background: #222 !important;
+  border-color: #5b5b5b !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+.console-shell .header-actions button.theme-toggle:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control):active:not(:disabled) {
+  background: #101010 !important;
+  box-shadow: none !important;
+  transform: scale(.97) !important;
+}
+
+.console-shell .header-actions button.theme-toggle:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control):focus-visible {
+  outline: 2px solid #bdd65d !important;
+  outline-offset: 3px !important;
+}
+
+.console-shell .header-actions .theme-icon {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+body.console-theme-light .console-shell .header-actions button.theme-toggle:not(.console-tab):not(.danger-action):not(.restaurant-alerts-control) {
+  background: #151515 !important;
+  color: #bdd65d !important;
+  border-color: #3a3a3a !important;
+  box-shadow: none !important;
+}
+
 .console-shell :is(button, a, input, select, textarea) { touch-action: manipulation; }
 .console-shell button { cursor: pointer; }
 .console-shell button:disabled { cursor: not-allowed; }
