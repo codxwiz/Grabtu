@@ -5,8 +5,12 @@ const SUPPORT_EMAIL = import.meta.env.VITE_SUPPORT_EMAIL || "hello@grabtu.com";
 const API = import.meta.env.VITE_API_ORIGIN || `${location.protocol}//${location.hostname}:4000`;
 export type MarketingPageKey = "home" | "services" | "pricing" | "about" | "contact" | "not-found";
 type LegalPageKey = "privacy" | "terms" | "retention" | "support" | "shipping" | "refunds";
+type MarketingTheme = "light" | "dark";
 type SharedProps = { dashboardHref: string; menuPreviewHref: string; currentPath: string };
 type MarketingProps = SharedProps & { page: MarketingPageKey };
+type HeaderProps = SharedProps & { theme: MarketingTheme; onToggleTheme: () => void };
+
+const MARKETING_THEME_KEY = "grabtu_marketing_theme";
 
 const nav = [["Menu", "/r/demo-bistro/table/T7"], ["Services", "/services"], ["Plans", "/pricing"], ["About us", "/about"], ["Contact", "/contact"]] as const;
 const legalCopy: Record<LegalPageKey, { title: string; paragraphs: string[] }> = {
@@ -36,13 +40,31 @@ function useSpaNavigation() {
   }, []);
 }
 
-function Header({ dashboardHref, menuPreviewHref, currentPath }: SharedProps) {
+function useMarketingTheme() {
+  const [theme, setTheme] = useState<MarketingTheme>(() => localStorage.getItem(MARKETING_THEME_KEY) === "dark" ? "dark" : "light");
+  useEffect(() => {
+    localStorage.setItem(MARKETING_THEME_KEY, theme);
+  }, [theme]);
+  return [theme, () => setTheme(current => current === "light" ? "dark" : "light")] as const;
+}
+
+function BrandLogo({ surface = "theme" }: { surface?: "theme" | "dark" }) {
+  return <span className={`marketing-brand-logo ${surface === "dark" ? "on-dark" : ""}`} role="img" aria-label={PRODUCT_NAME}><img className="marketing-logo-light" src="/grabtu-logo-light.png" alt="" decoding="async" /><img className="marketing-logo-dark" src="/grabtu-logo-dark.png" alt="" decoding="async" /></span>;
+}
+
+function ThemeGlyph({ theme }: { theme: MarketingTheme }) {
+  return theme === "light"
+    ? <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" /></svg>
+    : <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 15.2A8.3 8.3 0 0 1 8.8 4 8.4 8.4 0 1 0 20 15.2Z" /></svg>;
+}
+
+function Header({ dashboardHref, menuPreviewHref, currentPath, theme, onToggleTheme }: HeaderProps) {
   const [open, setOpen] = useState(false);
-  return <header className="site-header"><a className="wordmark" href="/" aria-label={`${PRODUCT_NAME} home`}>{PRODUCT_NAME}<i>.</i></a><button className="menu-toggle" type="button" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? "Close" : "Menu"}</button><nav id="site-navigation" className={open ? "open" : ""} aria-label="Primary"><a className="mobile-home-link" href="/" aria-current={currentPath === "/" ? "page" : undefined} onClick={() => setOpen(false)}>Home</a>{nav.map(([label, href]) => <a key={label} href={label === "Menu" ? menuPreviewHref : href} aria-current={currentPath === href ? "page" : undefined} onClick={() => setOpen(false)}>{label === "Menu" ? "Guest View" : label}</a>)}<a className="mobile-login-link" href={dashboardHref} onClick={() => setOpen(false)}>Restaurant login <span>↗</span></a></nav><a className="header-login" href={dashboardHref}>Restaurant login <span>↗</span></a></header>;
+  return <header className="site-header"><a className="wordmark" href="/" aria-label={`${PRODUCT_NAME} home`}><BrandLogo surface="dark" /></a><nav id="site-navigation" className={open ? "open" : ""} aria-label="Primary"><a className="mobile-home-link" href="/" aria-current={currentPath === "/" ? "page" : undefined} onClick={() => setOpen(false)}>Home</a>{nav.map(([label, href]) => <a key={label} href={label === "Menu" ? menuPreviewHref : href} aria-current={currentPath === href ? "page" : undefined} onClick={() => setOpen(false)}>{label === "Menu" ? "Guest View" : label}</a>)}<a className="mobile-login-link" href={dashboardHref} onClick={() => setOpen(false)}>Restaurant login <span>↗</span></a></nav><div className="site-header-actions"><button className="marketing-theme-toggle" type="button" aria-label={`Switch to ${theme === "light" ? "dark" : "light"} theme`} title={`Switch to ${theme === "light" ? "dark" : "light"} theme`} onClick={onToggleTheme}><ThemeGlyph theme={theme} /></button><a className="header-login" href={dashboardHref}>Restaurant login <span>↗</span></a><button className="menu-toggle" type="button" aria-expanded={open} aria-controls="site-navigation" onClick={() => setOpen(value => !value)}>{open ? "Close" : "Menu"}</button></div></header>;
 }
 
 function Footer({ menuPreviewHref }: Pick<SharedProps, "menuPreviewHref">) {
-  return <footer className="site-footer"><div><a className="wordmark footer-mark" href="/">{PRODUCT_NAME}<i>.</i></a><p>Restaurant service, without the service gaps.</p></div><div><small>EXPLORE</small><a href={menuPreviewHref}>Menu demo</a><a href="/services">Services</a><a href="/pricing">Plans</a></div><div><small>COMPANY</small><a href="/about">About us</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><p className="footer-copy">© {new Date().getFullYear()} Grabtu<br />Made for modern hospitality.</p></footer>;
+  return <footer className="site-footer"><div><a className="wordmark footer-mark" href="/" aria-label={`${PRODUCT_NAME} home`}><BrandLogo surface="dark" /></a><p>Restaurant service, without the service gaps.</p></div><div><small>EXPLORE</small><a href={menuPreviewHref}>Menu demo</a><a href="/services">Services</a><a href="/pricing">Plans</a></div><div><small>COMPANY</small><a href="/about">About us</a><a href="/contact">Contact</a><a href="/privacy">Privacy</a><a href="/terms">Terms</a></div><p className="footer-copy">© {new Date().getFullYear()} Grabtu<br />Made for modern hospitality.</p></footer>;
 }
 
 function ProductBoard() {
@@ -121,17 +143,19 @@ function NotFound() {
 
 export function MarketingSite({ dashboardHref, menuPreviewHref, currentPath, page }: MarketingProps) {
   useSpaNavigation();
+  const [theme, toggleTheme] = useMarketingTheme();
   useEffect(() => {
     const label = page === "home" ? "Restaurant OS" : page === "not-found" ? "Page not found" : `${page.charAt(0).toUpperCase()}${page.slice(1).replace("-", " ")}`;
     document.title = `${label} — ${PRODUCT_NAME}`;
   }, [page]);
   const shared = { dashboardHref, menuPreviewHref, currentPath };
-  return <div className="marketing-shell"><a className="skip-link" href="#main-content">Skip to content</a><Header {...shared} /><main id="main-content" tabIndex={-1}>{page === "home" ? <Home {...shared} /> : page === "services" ? <Services {...shared} /> : page === "pricing" ? <Pricing {...shared} /> : page === "about" ? <About /> : page === "contact" ? <Contact /> : <NotFound />}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;
+  return <div className={`marketing-shell marketing-theme-${theme}`}><a className="skip-link" href="#main-content">Skip to content</a><Header {...shared} theme={theme} onToggleTheme={toggleTheme} /><main id="main-content" tabIndex={-1}>{page === "home" ? <Home {...shared} /> : page === "services" ? <Services {...shared} /> : page === "pricing" ? <Pricing {...shared} /> : page === "about" ? <About /> : page === "contact" ? <Contact /> : <NotFound />}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;
 }
 
 export function LegalPage({ kind, dashboardHref, menuPreviewHref, currentPath }: SharedProps & { kind: LegalPageKey }) {
   useSpaNavigation();
+  const [theme, toggleTheme] = useMarketingTheme();
   const copy = legalCopy[kind];
   useEffect(() => { document.title = `${copy.title} — ${PRODUCT_NAME}`; }, [copy.title]);
-  return <div className="marketing-shell"><a className="skip-link" href="#main-content">Skip to content</a><Header dashboardHref={dashboardHref} menuPreviewHref={menuPreviewHref} currentPath={currentPath} /><main id="main-content" className="legal-page" tabIndex={-1}><p className="kicker">LEGAL</p><h1>{copy.title}</h1>{copy.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;
+  return <div className={`marketing-shell marketing-theme-${theme}`}><a className="skip-link" href="#main-content">Skip to content</a><Header dashboardHref={dashboardHref} menuPreviewHref={menuPreviewHref} currentPath={currentPath} theme={theme} onToggleTheme={toggleTheme} /><main id="main-content" className="legal-page" tabIndex={-1}><p className="kicker">LEGAL</p><h1>{copy.title}</h1>{copy.paragraphs.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</main><Footer menuPreviewHref={menuPreviewHref} /></div>;
 }

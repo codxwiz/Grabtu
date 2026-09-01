@@ -9,6 +9,31 @@
 
 .grabtu-wordmark span { color: #2dd4bf; }
 
+.grabtu-logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 172px;
+  max-width: 100%;
+}
+
+.grabtu-logo img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.grabtu-logo-light { display: none !important; }
+.grabtu-logo-dark { display: block !important; }
+
+body.console-theme-light .grabtu-logo-light { display: block !important; }
+body.console-theme-light .grabtu-logo-dark { display: none !important; }
+
+/* Authentication always uses the dark console surface. */
+body.console-theme-light .login .grabtu-logo-light { display: none !important; }
+body.console-theme-light .login .grabtu-logo-dark { display: block !important; }
+
 .console-brand-in-panel {
   min-height: 64px;
   justify-content: center !important;
@@ -22,15 +47,14 @@
 }
 
 .login .auth-wordmark {
-  display: block;
-  width: auto;
+  display: inline-flex;
+  width: min(230px, 72vw);
   margin: 0 auto 8px;
-  font-size: clamp(38px, 8vw, 52px);
 }
 
 .dashboard-gate-brand {
   margin-bottom: 12px;
-  font-size: clamp(40px, 6vw, 64px);
+  width: min(280px, 72vw);
 }
 
 body.console-theme-light .console-brand-in-panel .grabtu-wordmark {

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { RecaptchaVerifier, signInWithPhoneNumber } from "firebase/auth";
 import { API, TOKEN_KEY, ApiError, api } from "./api";
+import { BrandLogo } from "./BrandLogo";
 import { DEMO_TOKEN, enableDemoSession } from "./demo-mode";
 import { getFirebaseAuth, hasFirebasePhoneAuthConfig } from "./firebase";
 
@@ -262,7 +263,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
       <form
         onSubmit={otpSent ? (verificationToken && mode === "phone-signup" ? continueWithVerifiedPhone : verifyPhoneCode) : sendPhoneOtp}
       >
-        <div className="auth-wordmark grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></div>
+        <BrandLogo className="auth-wordmark" />
         <p>RESTAURANT CONSOLE</p>
         <h1>{mode === "phone-login" ? "SIGN IN WITH PHONE OTP." : "START YOUR 14-DAY FREE TRIAL."}</h1>
 

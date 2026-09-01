@@ -2,6 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import type { Order } from "@whitelabel/shared-types";
 import { API, api, ApiError, TOKEN_KEY } from "./api";
 import { BillingPage } from "./BillingPage";
+import { BrandLogo } from "./BrandLogo";
 import { Login } from "./Login";
 import { MenuPage } from "./MenuPage";
 import { PaymentsPage } from "./PaymentsPage";
@@ -14,7 +15,6 @@ import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, 
 import { isOpenWaiterCall, isWaiterCall, useWaiterAlertSound, WaiterAlertControls, WaiterAlertStack } from "./WaiterAlerts";
 
 const KdsPage = lazy(() => import("./KdsPage").then(module => ({ default: module.KdsPage })));
-const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
 const THEME_KEY = "white_label_console_theme";
 type Page = "kds" | "requests" | "menu" | "tables" | "payments" | "staff" | "settings" | "billing";
 
@@ -306,7 +306,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
   if (!user) {
     return <main className="dashboard-gate" aria-live="polite">
-      <div className="dashboard-gate-brand grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></div>
+      <BrandLogo className="dashboard-gate-brand" />
       {authLoading ? <><div className="loading-spinner" aria-hidden="true" /><h1>Opening your restaurant…</h1></> : <><h1>We couldn’t open the console</h1><p>{authError}</p><div><button onClick={() => void loadUser()}>Try again</button><button className="secondary-action" onClick={onLogout}>Return to sign in</button></div></>}
     </main>;
   }
@@ -317,7 +317,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
 
   return <div className={`console-shell theme-${theme}`} aria-busy={busy}><a className="skip-link" href="#console-main">Skip to main content</a><div className="console-body">
     <aside className={`console-sidebar ${mobileNavOpen ? "mobile-open" : ""}`} aria-label="Restaurant navigation"><nav className="console-switcher">
-      <div className="console-brand console-brand-in-panel"><strong className="grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></strong></div>
+      <div className="console-brand console-brand-in-panel"><BrandLogo className="console-brand-logo" /></div>
       <button className="console-nav-toggle" type="button" aria-expanded={mobileNavOpen} aria-controls="console-page-menu" onClick={() => setMobileNavOpen(open => !open)}><span className="console-nav-toggle-icon" aria-hidden="true"><i /><i /><i /></span>{mobileNavOpen ? "Close" : "Menu"}</button>
       <div id="console-page-menu" className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => { setPage(item); setMobileNavOpen(false); }}>{LABEL[item]}{item === "requests" && waiterRequests.length > 0 && <span className="nav-badge" aria-label={`${waiterRequests.length} waiting`}>{waiterRequests.length}</span>}</button>)}</div>
       <button type="button" className="mobile-nav-signout" onClick={() => { setMobileNavOpen(false); signOut(); }}>Sign out</button>

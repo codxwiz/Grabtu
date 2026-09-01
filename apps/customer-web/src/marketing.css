@@ -132,3 +132,49 @@
 .comparison-scroll tbody td:nth-child(3){background:#fff}
 .contact-layout,.contact-card-wrap,.contact-layout .contact-card,.contact-layout input,.contact-layout textarea{background:#fff}
 @media(max-width:850px){.site-header nav{background:#090909;border-bottom-color:#2d2d2d}.site-header nav a{border-bottom-color:#333}.site-header nav .mobile-login-link{background:#fff;color:#090909}}
+
+/* Official Grabtu wordmarks and public-site theme control. */
+.marketing-brand-logo{display:inline-flex;align-items:center;justify-content:center;width:124px;max-width:100%}
+.marketing-brand-logo img{display:block;width:100%;height:auto;object-fit:contain}
+.marketing-logo-light{display:block!important}.marketing-logo-dark{display:none!important}
+.marketing-theme-dark .marketing-logo-light{display:none!important}.marketing-theme-dark .marketing-logo-dark{display:block!important}
+.marketing-brand-logo.on-dark .marketing-logo-light{display:none!important}.marketing-brand-logo.on-dark .marketing-logo-dark{display:block!important}
+.footer-mark .marketing-brand-logo{width:164px}
+.site-header-actions{justify-self:end;display:flex;align-items:center;gap:18px}
+.marketing-theme-toggle{display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #3a3a3a;border-radius:999px;background:#151515;color:#bdd65d;cursor:pointer}
+.marketing-theme-toggle:hover{background:#222;border-color:#5b5b5b}
+.marketing-theme-toggle svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.marketing-theme-toggle:focus-visible{outline-color:#bdd65d}
+
+.marketing-shell,.marketing-shell :is(main,section,article,div,form,table,th,td,input,textarea,a,button){transition:background-color .2s ease,color .2s ease,border-color .2s ease,box-shadow .2s ease}
+.marketing-shell.marketing-theme-dark{--paper:#0d100e;--ink:#f3f5ef;background:#0d100e;color:#f3f5ef;color-scheme:dark}
+.marketing-theme-dark main,
+.marketing-theme-dark :is(.hero,.statement,.home-services,.home-premium,.premium-promise,.closing-cta,.inner-hero,.legal-page,.service-list,.inline-cta,.plan-grid,.about-grid,.principles,.contact-layout,.contact-copy,.contact-card-wrap,.comparison-section,.business-spotlight,.pricing-faq,.pricing-final){background:#0d100e;color:#f3f5ef;border-color:#343a35}
+.marketing-theme-dark :is(.home-premium,.pricing-faq,.contact-copy,.contact-card-wrap){background:#151916}
+.marketing-theme-dark :is(.service-list article,.plan-grid article,.principles article,.contact-layout .contact-card,.comparison-scroll,.comparison-scroll table,.comparison-scroll th,.comparison-scroll td){background:#121613;color:#f3f5ef;border-color:#384039}
+.marketing-theme-dark :is(.home-services p,.home-premium>div>p:not(.kicker),.about-grid>div>p,.page-lead,.service-list article p,.legal-page>p:not(.kicker),.contact-layout .contact-copy>p:not(.kicker),.form-heading span,.faq-list details p,.section-heading>p:not(.kicker),.plan-grid .plan-detail,.plan-grid .featured .plan-detail,.plan-price span,.business-spotlight>div>p:not(.kicker),.business-spotlight dd span,.business-spotlight dt){color:#b8c0ba!important}
+.marketing-theme-dark :is(.text-link,.text-link.light,.contact-layout .contact-copy>a,.site-footer a){color:#f3f5ef}
+.marketing-theme-dark :is(.home-services,.premium-promise,.premium-promise ul,.premium-promise li,.plan-grid article,.plan-grid .plan-capacity,.comparison-section,.comparison-scroll,.comparison-scroll th,.comparison-scroll td,.business-spotlight dl,.business-spotlight dl div,.pricing-faq,.faq-list,.faq-list details,.principles article,.contact-copy,.form-heading){border-color:#384039!important}
+.marketing-theme-dark .premium-promise li::before{background:#bdd65d}
+.marketing-theme-dark .button.black,
+.marketing-theme-dark :is(.closing-cta,.inline-cta,.business-spotlight,.plan-grid article.featured) .button.white{background:#bdd65d;color:#10140f;border-color:#bdd65d}
+.marketing-theme-dark .button:hover{box-shadow:3px 3px 0 #667334}
+.marketing-theme-dark .plan-grid article.featured{background:#182019;color:#f3f5ef;border-color:#667334}
+.marketing-theme-dark .comparison-scroll tbody td:nth-child(3){background:#1d261e;color:#f3f5ef}
+.marketing-theme-dark .comparison-scroll thead th{background:#070908;color:#f3f5ef}
+.marketing-theme-dark .contact-layout :is(input,textarea){background:#0e120f;color:#f3f5ef;border-color:#465048}
+.marketing-theme-dark .contact-layout :is(input,textarea):focus{background:#121713;border-color:#bdd65d;box-shadow:0 0 0 1px #bdd65d}
+.marketing-theme-dark .contact-layout :is(input,textarea)::placeholder{color:#7f8981}
+.marketing-theme-dark .hero-dashboard{border-color:#4a524b;box-shadow:18px 18px 0 #293029}
+.marketing-theme-dark .site-header,.marketing-theme-dark .site-footer{background:#070908;color:#fff;border-color:#303530}
+
+@media(max-width:850px){
+  .site-header-actions{gap:4px}
+  .marketing-theme-toggle{width:44px;height:44px;border-color:#333}
+  .marketing-shell button.menu-toggle{height:44px!important;min-height:44px!important}
+  .marketing-brand-logo{width:112px}
+  .footer-mark .marketing-brand-logo{width:146px}
+  .marketing-theme-dark .hero-dashboard{box-shadow:10px 10px 0 #293029}
+}
+
+@media(prefers-reduced-motion:reduce){.marketing-shell,.marketing-shell :is(main,section,article,div,form,table,th,td,input,textarea,a,button){transition:none!important}}

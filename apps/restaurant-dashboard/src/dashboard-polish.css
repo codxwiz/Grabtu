@@ -213,7 +213,7 @@ body.console-theme-light .page-payments .merchant-connect-card .merchant-key-for
     padding: 4px 8px !important;
     border: 0 !important;
   }
-  .console-brand-in-panel .grabtu-wordmark { font-size: 27px; }
+  .console-brand-in-panel .console-brand-logo { width: 138px; }
   .console-menu-scroll {
     grid-column: 1 / -1;
     display: flex;
@@ -527,6 +527,12 @@ body.console-theme-light .page-payments .merchant-connect-card .merchant-key-for
   }
 
   /* The mobile navigation sits on the dark sidebar surface in both themes. */
+  body.console-theme-light .console-brand-in-panel .grabtu-logo-light {
+    display: none !important;
+  }
+  body.console-theme-light .console-brand-in-panel .grabtu-logo-dark {
+    display: block !important;
+  }
   body.console-theme-light .console-brand-in-panel .grabtu-wordmark {
     color: #fff !important;
     background: none !important;
