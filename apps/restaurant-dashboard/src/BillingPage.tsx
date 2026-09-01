@@ -1,6 +1,6 @@
-import type { Billing } from "./types";
-
-const SALES_URL = import.meta.env.VITE_SALES_URL || "/contact";
+import { useEffect, useRef, useState } from "react";
+import { SupportTicketsCard } from "./SupportTicketsCard";
+import type { Billing, SupportTicket } from "./types";
 
 const money = (amount: number, currency = "INR") => new Intl.NumberFormat("en-IN", { style: "currency", currency, maximumFractionDigits: 0 }).format(amount);
 const title = (value: string) => value.toLowerCase() === "business" || value.toLowerCase() === "pro" ? "BUSINESS" : value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
@@ -9,7 +9,26 @@ const safeInvoiceUrl = (value?: string | null) => {
   try { const url = new URL(value); return url.protocol === "https:" || url.protocol === "http:" ? url.href : null; } catch { return null; }
 };
 
-export function BillingPage({ billing, onCheckout, onCancel }: { billing: Billing | null; onCheckout: (plan: string) => void; onCancel: () => void }) {
+type BillingPageProps = {
+  billing: Billing | null;
+  supportTickets: SupportTicket[];
+  onCheckout: (plan: string) => void;
+  onCancel: () => void;
+  onCreateSupportTicket: (data: { subject: string; category: string; priority: string; message: string }) => Promise<boolean>;
+};
+
+export function BillingPage({ billing, supportTickets, onCheckout, onCancel, onCreateSupportTicket }: BillingPageProps) {
+  const [supportOpen, setSupportOpen] = useState(false);
+  const supportCloseRef = useRef<HTMLButtonElement | null>(null);
+
+  useEffect(() => {
+    if (!supportOpen) return;
+    const onKeyDown = (event: KeyboardEvent) => { if (event.key === "Escape") setSupportOpen(false); };
+    document.addEventListener("keydown", onKeyDown);
+    window.setTimeout(() => supportCloseRef.current?.focus(), 0);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [supportOpen]);
+
   if (!billing) return <div className="empty-state">Loading billing…</div>;
   const currentPlan = billing.currentPlan || (billing.subscription?.plan === "pro" ? "business" : billing.subscription?.plan || "starter");
   const isTrial = billing.subscription?.status.toUpperCase() === "TRIALING";
@@ -51,15 +70,13 @@ export function BillingPage({ billing, onCheckout, onCancel }: { billing: Billin
             );
           })}
           <article className={`plan-card enterprise-plan ${currentPlan === "enterprise" ? "current" : ""}`}>
-            {currentPlan === "enterprise" && <span className="plan-ribbon">ENTERPRISE ACCESS</span>}
+            {currentPlan === "enterprise" && <span className="plan-ribbon">SPECIAL EVENT ACTIVE</span>}
             <div className="plan-main">
-              <div className="plan-title-row"><b>ENTERPRISE</b><span>For multi-location restaurant groups</span></div>
-              <div className="plan-price">Custom<small>managed agreement</small></div>
-              <div className="enterprise-feature-list"><span>Multi-location control</span></div>
+              <div className="plan-title-row"><b>SPECIAL EVENT SETUP</b><span>For private events and temporary service</span></div>
+              <div className="plan-price">Custom<small>tailored setup</small></div>
+              <div className="enterprise-feature-list"><span>Event-ready configuration</span></div>
             </div>
-            {currentPlan === "enterprise"
-              ? <button className="current-plan-button" disabled>✓ Enterprise active</button>
-              : <a className="plan-choose-button enterprise-contact" href={SALES_URL}>Talk to sales</a>}
+            <button type="button" className="plan-choose-button enterprise-contact" onClick={() => setSupportOpen(true)}>Request</button>
           </article>
         </div>
         {billing.subscription?.cancelAtPeriodEnd && <div className="billing-alert warning"><span>!</span><div><b>Automatic renewal cancelled</b><small>{isTrial ? "Your trial remains available until its scheduled end. No subscription charge will be made." : "Your plan stays active until the end of the current billing period."}</small></div></div>}
@@ -75,6 +92,13 @@ export function BillingPage({ billing, onCheckout, onCancel }: { billing: Billin
           </div>; })}
         </div>}
       </section>
+
+      {supportOpen && <div className="support-request-modal" role="dialog" aria-modal="true" aria-label="Special event support request" onMouseDown={event => { if (event.target === event.currentTarget) setSupportOpen(false); }}>
+        <div className="support-request-dialog">
+          <button ref={supportCloseRef} type="button" className="support-request-close" aria-label="Close support request" onClick={() => setSupportOpen(false)}>×</button>
+          <SupportTicketsCard tickets={supportTickets} onCreate={onCreateSupportTicket} />
+        </div>
+      </div>}
     </div>
   );
 }

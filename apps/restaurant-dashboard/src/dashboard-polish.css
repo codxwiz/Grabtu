@@ -241,6 +241,59 @@ body.console-theme-light .support-ticket-card textarea { border-color: #cbd5d1; 
 .plan-choose-button,
 .current-plan-button,
 .enterprise-contact { min-width: 170px; min-height: 48px !important; }
+.support-request-modal {
+  position: fixed;
+  z-index: 1000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: rgba(8, 10, 9, .82);
+  backdrop-filter: blur(6px);
+}
+.support-request-dialog {
+  position: relative;
+  width: min(100%, 900px);
+  max-height: calc(100dvh - 40px);
+  margin: auto;
+  overflow-y: auto;
+  border-radius: 22px;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .46);
+}
+.support-request-dialog .support-ticket-card { margin: 0; }
+.support-request-dialog .support-ticket-card > div:first-child { padding-right: 64px; }
+.support-request-close {
+  position: absolute !important;
+  z-index: 2;
+  top: 16px !important;
+  right: 16px !important;
+  left: auto !important;
+  display: grid;
+  place-items: center;
+  width: 48px !important;
+  min-width: 48px !important;
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 !important;
+  border: 1px solid #5a6664 !important;
+  border-radius: 50% !important;
+  background: #1a2021 !important;
+  color: #fff !important;
+  font-size: 30px !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+.support-request-close:hover,
+.support-request-close:focus-visible,
+.support-request-close:active { transform: none !important; }
+body.console-theme-light .support-request-close {
+  border-color: #cbd5d1 !important;
+  background: #fff !important;
+  color: #202820 !important;
+}
 .invoice-row { gap: var(--console-gap-2) !important; }
 
 .payment-review-card { display: grid; gap: 18px; }
