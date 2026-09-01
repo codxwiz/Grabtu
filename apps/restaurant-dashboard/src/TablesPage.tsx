@@ -134,7 +134,7 @@ export function TablesPage({ tables, canManage, onAdd, onEdit, onToggle, onDelet
       </div>
     </div>}
 
-    {qr && <div className="modal" role="dialog" aria-modal="true" aria-labelledby="qr-title" onMouseDown={event => { if (event.target === event.currentTarget) setQr(null); }}>
+    {qr && <div className="modal qr-modal" role="dialog" aria-modal="true" aria-labelledby="qr-title" onMouseDown={event => { if (event.target === event.currentTarget) setQr(null); }}>
       <div className="modal-card qr-modal-card">
         <button ref={closeButtonRef} type="button" className="modal-close" aria-label="Close QR code" onClick={() => setQr(null)}>×</button>
         <h2 id="qr-title">{qr.table.label}</h2>

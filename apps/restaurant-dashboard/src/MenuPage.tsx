@@ -19,6 +19,7 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState("");
+  const [dietaryType, setDietaryType] = useState<"veg" | "non-veg">("veg");
   const imageUrlRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -26,6 +27,9 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
     const timeout = window.setTimeout(() => setMessage(""), 3000);
     return () => window.clearTimeout(timeout);
   }, [message]);
+  useEffect(() => {
+    setDietaryType(editing?.isVeg === false ? "non-veg" : "veg");
+  }, [editing]);
 
   async function categorySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -60,7 +64,7 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
         prepMinutes: Number(data.get("prepMinutes") || 15),
         hsnCode: String(data.get("hsnCode") || "") || undefined,
         gstRate: String(data.get("gstRate") || "") === "" ? undefined : Number(data.get("gstRate")),
-        isVeg: data.get("isVeg") === "on",
+        isVeg: dietaryType === "veg",
         isAvailable: data.get("outOfStock") !== "on",
         tags: String(data.get("tags") || "").split(",").map(tag => tag.trim()).filter(Boolean),
       });
@@ -148,7 +152,7 @@ export function MenuPage({ categories, canManage, onAddCategory, onSaveItem, onD
       <div className="form-row"><label>HSN/SAC code<input name="hsnCode" inputMode="numeric" pattern="[0-9]{4,8}" defaultValue={editing?.hsnCode || ""} placeholder="Optional" /></label><label>GST rate %<input name="gstRate" type="number" min="0" max="50" step=".01" defaultValue={editing?.gstRate} placeholder="Restaurant default" /></label></div>
       <label>Preparation estimate (minutes)<input name="prepMinutes" type="number" defaultValue={editing?.prepMinutes || 15} min="1" max="180" step="1" inputMode="numeric" required /></label>
       <label>Tags<input name="tags" defaultValue={Array.isArray(editing?.tags) ? editing.tags.join(", ") : ""} placeholder="Bestseller, Spicy" /></label>
-      <label className="check"><input name="isVeg" type="checkbox" defaultChecked={editing?.isVeg ?? true} /> Vegetarian</label>
+      <fieldset className="dietary-field"><legend>Dietary type</legend><div className="dietary-choice-row"><label className="dietary-choice veg"><input name="dietaryType" type="radio" value="veg" checked={dietaryType === "veg"} onChange={() => setDietaryType("veg")} /><span>Vegetarian</span></label><label className="dietary-choice non-veg"><input name="dietaryType" type="radio" value="non-veg" checked={dietaryType === "non-veg"} onChange={() => setDietaryType("non-veg")} /><span>Non-Veg</span></label></div></fieldset>
       {editing && <label className="check stock-toggle"><input name="outOfStock" type="checkbox" defaultChecked={!editing.isAvailable} /> Out of stock</label>}
       <button disabled={Boolean(busy)}>{busy === "item" ? "Saving…" : editing ? "Save changes" : "Add item"}</button>
       {editing && <button type="button" className="secondary-action" onClick={() => setEditing(null)} disabled={Boolean(busy)}>Cancel</button>}

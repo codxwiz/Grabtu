@@ -178,3 +178,12 @@
 }
 
 @media(prefers-reduced-motion:reduce){.marketing-shell,.marketing-shell :is(main,section,article,div,form,table,th,td,input,textarea,a,button){transition:none!important}}
+
+/* Preserve the full widescreen dashboard capture in the homepage hero. */
+.hero-dashboard img{
+  width:100%;
+  height:auto;
+  aspect-ratio:3292/1518;
+  object-fit:contain;
+  object-position:center top;
+}

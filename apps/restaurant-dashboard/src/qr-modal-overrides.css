@@ -1,4 +1,82 @@
 .console-shell .modal-card{padding-top:88px!important}
-.console-shell .modal-card .modal-close{position:absolute!important;left:50%!important;right:auto!important;top:18px!important;transform:translateX(-50%)!important;width:48px!important;height:48px!important;padding:0!important;border:1px solid rgba(255,255,255,.5)!important;border-radius:50%!important;background:transparent!important;color:#fff!important;font-size:32px!important;line-height:1!important}
+.console-shell .modal-card .modal-close{position:absolute!important;left:50%!important;right:auto!important;top:18px!important;transform:translateX(-50%)!important;width:48px!important;height:48px!important;padding:0!important;border:1px solid rgba(255,255,255,.5)!important;border-radius:50%!important;background:transparent!important;color:#fff!important;font-size:32px!important;line-height:1!important;transition:border-color .18s ease,background-color .18s ease,color .18s ease,filter .18s ease!important}
+.console-shell .modal-card .modal-close:hover,
+.console-shell .modal-card .modal-close:focus-visible,
+.console-shell .modal-card .modal-close:active{
+  transform:translateX(-50%)!important;
+}
 .console-shell .modal-card h2{margin:0 0 24px!important;text-align:center!important}
 .console-shell .modal-card code{color:#000!important}
+
+.console-shell .qr-modal{
+  box-sizing:border-box;
+  place-items:center!important;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:max(16px,env(safe-area-inset-top)) max(16px,env(safe-area-inset-right)) max(16px,env(safe-area-inset-bottom)) max(16px,env(safe-area-inset-left))!important;
+}
+
+.console-shell .qr-modal-card{
+  box-sizing:border-box;
+  width:min(100%,520px)!important;
+  max-width:520px!important;
+  max-height:calc(100dvh - 32px);
+  margin:auto!important;
+  padding:88px clamp(20px,4vw,32px) 28px!important;
+  overflow-y:auto;
+}
+
+.console-shell .qr-modal-card .qr-image{
+  display:block;
+  width:min(100%,360px)!important;
+  max-width:100%!important;
+  height:auto!important;
+  aspect-ratio:1;
+  object-fit:contain;
+  margin:0 auto 20px;
+  background:#fff;
+  border-radius:10px;
+}
+
+.console-shell .qr-modal-card .qr-destination{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  margin:0 auto 16px;
+  color:#fff!important;
+  font-weight:700;
+  text-decoration-color:rgba(255,255,255,.65);
+  text-underline-offset:4px;
+  overflow-wrap:anywhere;
+}
+
+.console-shell .qr-modal-card .qr-destination:hover{
+  color:var(--teal)!important;
+  text-decoration-color:currentColor;
+}
+
+.console-shell .qr-modal-card .qr-destination:focus-visible{
+  outline:2px solid rgba(45,212,191,.5);
+  outline-offset:4px;
+  border-radius:4px;
+}
+
+body.console-theme-light .console-shell .qr-modal-card .qr-destination{
+  color:#202820!important;
+  text-decoration-color:rgba(32,40,32,.5);
+}
+
+body.console-theme-light .console-shell .qr-modal-card .qr-destination:hover{
+  color:#168b7a!important;
+}
+
+@media(max-width:480px){
+  .console-shell .qr-modal-card{
+    padding:82px 18px 22px!important;
+  }
+
+  .console-shell .qr-modal-card h2{
+    margin-bottom:18px!important;
+  }
+}

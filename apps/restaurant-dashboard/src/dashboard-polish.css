@@ -98,6 +98,83 @@ body.console-theme-light .console-shell .header-actions button.theme-toggle:not(
   padding-left: var(--console-gap-2);
 }
 .menu-item-actions button { min-width: 88px; }
+
+.item-form .dietary-field {
+  min-width: 0;
+  margin: 16px 0;
+  padding: 0;
+  border: 0;
+}
+
+.item-form .dietary-field legend {
+  margin-bottom: 8px;
+  color: #b7bdc4;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.item-form .dietary-choice-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  width: 100%;
+}
+
+.item-form .dietary-choice {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-width: 0;
+  min-height: 48px;
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #4b5655;
+  border-radius: 12px;
+  background: #1c2223;
+  color: #d7ddda;
+  cursor: pointer;
+  transition: background-color .2s ease, border-color .2s ease, color .2s ease;
+}
+
+.item-form .dietary-choice input {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  flex: 0 0 18px;
+  accent-color: #2dd4bf;
+}
+
+.item-form .dietary-choice span {
+  min-width: 0;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.item-form .dietary-choice:has(input:checked) {
+  border-color: #45a985;
+  background: #173c32;
+  color: #e2fff5;
+}
+
+.item-form .dietary-choice:focus-within {
+  outline: 2px solid rgba(45, 212, 191, .42);
+  outline-offset: 2px;
+}
+
+body.console-theme-light .item-form .dietary-field legend { color: #506056; }
+body.console-theme-light .item-form .dietary-choice {
+  border-color: #c6d0c7;
+  background: #fff;
+  color: #303a33;
+}
+body.console-theme-light .item-form .dietary-choice:has(input:checked) {
+  border-color: #168b7a;
+  background: #e7f5f0;
+  color: #155e52;
+}
 .item-form form > button + button { margin-top: var(--console-gap-2) !important; }
 
 .page-settings .settings-aside { grid-template-columns: minmax(0, 1fr) !important; }
