@@ -79,7 +79,6 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
   const [restaurantName, setRestaurantName] = useState(location.searchParams.get("restaurant") || "");
   const [ownerName, setOwnerName] = useState(location.searchParams.get("owner") || "");
   const [plan, setPlan] = useState<Plan>("starter");
-  const [mandateConsent, setMandateConsent] = useState(false);
   const [demoAvailable, setDemoAvailable] = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaElementRef = useRef<HTMLDivElement | null>(null);
@@ -146,9 +145,6 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
       if (mode === "phone-signup" && (!restaurantName.trim() || !ownerName.trim())) {
         throw new Error("Add your restaurant name and owner name before sending the code.");
       }
-      if (mode === "phone-signup" && !mandateConsent) {
-        throw new Error("Accept the recurring payment terms before starting the trial.");
-      }
       const verifier = getRecaptchaVerifier();
       const auth = getFirebaseAuth();
       if (!auth) throw new Error("Firebase phone auth is not configured yet");
@@ -171,7 +167,6 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
         restaurantName,
         ownerName,
         plan,
-        mandateConsent,
       });
       localStorage.setItem(TOKEN_KEY, data.token);
       if (data.razorpayKeyId && data.providerSubscriptionId) {
@@ -313,17 +308,6 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
                 })}
               </div>
             </fieldset>
-            <label className="mandate-consent">
-              <input
-                type="checkbox"
-                checked={mandateConsent}
-                onChange={event => setMandateConsent(event.currentTarget.checked)}
-                required
-              />
-              <span>
-                I authorize Razorpay to set up recurring payment for the selected plan. My first subscription charge will occur after the 14-day free trial, and I can cancel before then to avoid the charge.
-              </span>
-            </label>
           </>
         )}
 
@@ -366,7 +350,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
         {!otpSent ? (
           <button disabled={busy}>{busy ? "Sending code…" : mode === "phone-signup" ? "Send code to create trial" : "Send code to sign in"}</button>
         ) : verificationToken && mode === "phone-signup" ? (
-          <button disabled={busy}>{busy ? "Preparing secure mandate…" : "Create trial and authorize mandate"}</button>
+          <button disabled={busy}>{busy ? "Creating trial…" : "Create trial"}</button>
         ) : (
           <button disabled={busy}>{busy ? "Verifying…" : "Verify and continue"}</button>
         )}

@@ -342,7 +342,7 @@ const masterStaffUpdate=z.object({
   isActive:z.boolean().optional(),
 });
 const firebaseLoginInput=z.object({idToken:z.string().min(50)});
-const firebaseSignupInput=z.object({idToken:z.string().min(50),restaurantName:z.string().trim().min(2).max(80),ownerName:z.string().trim().min(2).max(80),plan:z.enum(["starter","growth","business","pro"]).default("starter"),mandateConsent:z.literal(true)});
+const firebaseSignupInput=z.object({idToken:z.string().min(50),restaurantName:z.string().trim().min(2).max(80),ownerName:z.string().trim().min(2).max(80),plan:z.enum(["starter","growth","business","pro"]).default("starter"),mandateConsent:z.boolean().optional().default(false)});
 const orderInput = z.object({ restaurantId:z.string(), tableId:z.string(), tableLabel:z.string(), paymentMethodId:z.string().optional(), paymentMode:z.enum(["upi","card","counter"]).optional(), items:z.array(z.object({menuItemId:z.string(),quantity:z.number().int().min(1).max(20),notes:z.string().trim().max(200).optional(),optionIds:z.array(z.string()).max(10).refine(ids=>new Set(ids).size===ids.length,{message:"Item options must be unique"}).default([])})).min(1).max(50) });
 const itemInput = z.object({ categoryId:z.string(), name:z.string().trim().min(2).max(100), description:z.string().trim().max(300).default(""), price:z.number().int().min(1).max(1_000_000), isVeg:z.boolean(), isAvailable:z.boolean().default(true), tags:z.array(z.string().max(30)).max(5).default([]),imageUrl:z.string().url().max(1000).or(z.literal("")).default(""),prepMinutes:z.number().int().min(1).max(180).default(15),hsnCode:z.string().trim().regex(/^[0-9]{4,8}$/).optional().or(z.literal("")),gstRate:z.coerce.number().min(0).max(50).optional() });
 const categoryInput = z.object({ name:z.string().trim().min(2).max(60), sortOrder:z.number().int().min(0).max(1000) });
@@ -466,7 +466,7 @@ app.post("/api/auth/firebase/login",async(req:Request,res:Response)=>{
 app.post("/api/auth/firebase/signup",async(req:Request,res:Response)=>{
   if(!isFirebaseAuthConfigured())return res.status(503).json({message:"Firebase phone auth is not configured yet"});
   const parsed=firebaseSignupInput.safeParse(req.body);
-  if(!parsed.success)return res.status(400).json({message:"Accept the recurring mandate terms and provide the verified phone, restaurant, owner, and plan"});
+  if(!parsed.success)return res.status(400).json({message:"Provide the verified phone, restaurant, owner, and plan"});
   let decoded;
   try{decoded=await verifyFirebaseIdToken(parsed.data.idToken)}catch{return res.status(401).json({message:"That phone verification expired or was invalid",code:"FIREBASE_AUTH_FAILED"})}
   const phone=getFirebasePhoneNumber(decoded);
@@ -488,27 +488,12 @@ app.post("/api/auth/firebase/signup",async(req:Request,res:Response)=>{
     },
     include:{staff:true}
   });
-  let checkoutUrl:string|null=null,mandateSetupRequired=true;
-  try{
-    const providerSubscription=await createRazorpaySubscription(selectedPlan,restaurant.id,trialEndsAt);
-    if(providerSubscription){
-      checkoutUrl=providerSubscription.short_url||null;
-      mandateSetupRequired=!checkoutUrl;
-      await prisma.subscription.update({
-        where:{restaurantId:restaurant.id},
-        data:{provider:"razorpay",providerSubscriptionId:providerSubscription.id,status:"TRIALING"}
-      });
-    }
-  }catch(error){
-    console.error("Could not create trial mandate subscription",error);
-  }
   const owner=restaurant.staff[0];
   await prisma.organizationMembership.create({data:{organizationId:restaurant.organizationId,staffUserId:owner.id,role:"OWNER"}});
   const session=await prisma.staffSession.create({data:{staffUserId:owner.id,expiresAt:new Date(Date.now()+12*60*60*1000),userAgent:req.get("user-agent")?.slice(0,300),ipAddress:req.ip}});
   const token=jwt.sign({id:owner.id,restaurantId:restaurant.id,role:owner.role,sessionId:session.id},JWT_SECRET,{expiresIn:"12h",issuer:"white-label-restaurant-platform"});
   return res.status(201).json({
-    token,checkoutUrl,mandateSetupRequired,razorpayKeyId:checkoutUrl?razorpayBillingConfig()?.keyId||null:null,
-    providerSubscriptionId:(await prisma.subscription.findUnique({where:{restaurantId:restaurant.id},select:{providerSubscriptionId:true}}))?.providerSubscriptionId||null,
+    token,checkoutUrl:null,mandateSetupRequired:true,razorpayKeyId:null,providerSubscriptionId:null,
     user:{...buildStaffAuthResponse({name:owner.name,phone:owner.phone,role:owner.role,restaurant:{id:restaurant.id,name:restaurant.name,slug:restaurant.slug,plan:restaurant.plan,trialEndsAt}}),trial:{days:14,endsAt:trialEndsAt}}
   });
 });
