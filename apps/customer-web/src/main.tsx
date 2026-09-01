@@ -211,7 +211,10 @@ function App() {
   const { isOrderingRoute } = getCustomerRoute();
   const menuPreviewHref = "/r/demo-bistro/table/T7";
   const localDashboard = `${location.protocol}//${location.hostname}:5174`;
-  const dashboardHref = import.meta.env.VITE_DASHBOARD_ORIGIN || (/^(localhost|127\.0\.0\.1)$/.test(location.hostname) ? localDashboard : "https://dashboard.grabtu.com");
+  const isLocalHost = /^(localhost|127\.0\.0\.1)$/.test(location.hostname);
+  const dashboardHref = isLocalHost
+    ? (import.meta.env.VITE_DASHBOARD_ORIGIN || localDashboard)
+    : "https://dashboard.grabtu.com";
   const currentPath = location.pathname;
 
   if (legalKind) {
