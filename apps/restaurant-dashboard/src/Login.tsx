@@ -28,11 +28,16 @@ const signupPlans: Array<{ id: Exclude<Plan, "pro">; name: string; price: string
 ];
 
 async function postPublic<T>(path: string, body: unknown): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API}${path}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+  } catch {
+    throw new Error("Could not reach the Grabtu server. Check your connection and try again.");
+  }
   const data = await response.json().catch(() => ({}));
   if (!response.ok) throw new ApiError(data.message || "Request failed", response.status, data.code);
   return data as T;
@@ -79,6 +84,7 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
   const [restaurantName, setRestaurantName] = useState(location.searchParams.get("restaurant") || "");
   const [ownerName, setOwnerName] = useState(location.searchParams.get("owner") || "");
   const [plan, setPlan] = useState<Plan>("starter");
+  const selectedPlan = signupPlans.find(option => option.id === plan) || signupPlans[0];
   const [demoAvailable, setDemoAvailable] = useState(false);
   const recaptchaRef = useRef<RecaptchaVerifier | null>(null);
   const recaptchaElementRef = useRef<HTMLDivElement | null>(null);
@@ -281,32 +287,26 @@ export function Login({ onLogin }: { onLogin: (token: string) => void }) {
             </label>
             <fieldset className="premium-plan-field">
               <legend>Choose your plan</legend>
-              <div className="premium-plan-options">
-                {signupPlans.map(option => {
-                  const selected = plan === option.id;
-                  return (
-                    <button
-                      key={option.id}
-                      type="button"
-                      className={`premium-plan-option ${selected ? "selected" : ""}`}
-                      aria-pressed={selected}
-                      onClick={() => setPlan(option.id)}
-                    >
-                      <span className="premium-plan-copy">
-                        <strong>{option.name}</strong>
-                        <small>{option.description}</small>
-                      </span>
-                      <span className="premium-plan-price">
-                        <strong>{option.price}</strong>
-                        <small>/ month</small>
-                      </span>
-                      <span className="premium-plan-check" aria-hidden="true">
-                        <svg viewBox="0 0 24 24"><path d="m7 12 3 3 7-7" /></svg>
-                      </span>
-                    </button>
-                  );
-                })}
+              <div className="premium-select-shell">
+                <select
+                  className="premium-select"
+                  value={plan}
+                  onChange={event => setPlan(event.currentTarget.value as Plan)}
+                  aria-describedby="selected-plan-summary"
+                >
+                  {signupPlans.map(option => (
+                    <option key={option.id} value={option.id}>
+                      {option.name} — {option.price} / month
+                    </option>
+                  ))}
+                </select>
+                <span className="premium-select-arrow" aria-hidden="true">
+                  <svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5" /></svg>
+                </span>
               </div>
+              <p id="selected-plan-summary" className="premium-select-summary">
+                {selectedPlan.description} · {selectedPlan.price} / month after the 14-day trial
+              </p>
             </fieldset>
           </>
         )}

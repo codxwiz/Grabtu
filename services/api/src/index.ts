@@ -124,11 +124,13 @@ function validateProductionEnvironment() {
 }
 
 validateProductionEnvironment();
-const origins = [
+const configuredOrigins = [
   process.env.CUSTOMER_ORIGIN || "http://localhost:5173",
   process.env.DASHBOARD_ORIGIN || "http://localhost:5174",
   process.env.MASTER_ADMIN_ORIGIN || (process.env.NODE_ENV === "production" ? "" : "http://localhost:5175"),
 ].filter(Boolean).map(origin=>origin.replace(/\/+$/, ""));
+const productionOrigins = ["https://grabtu.com", "https://www.grabtu.com", "https://dashboard.grabtu.com"];
+const origins = [...new Set([...configuredOrigins, ...(process.env.NODE_ENV === "production" ? productionOrigins : [])])];
 const isAllowedOrigin=(origin?:string)=>!origin||origins.includes(origin)||(process.env.NODE_ENV!=="production"&&/^https?:\/\/(localhost|127\.0\.0\.1|192\.168\.\d+\.\d+|10\.\d+\.\d+|172\.(?:1[6-9]|2\d|3[0-1])\.\d+\.\d+):517[3-9]$/.test(origin));
 const qrStorage=createQrStorage();await qrStorage.ensureReady();
 const redisClient=process.env.REDIS_URL?createClient({url:process.env.REDIS_URL}):null,redisSubscriber=redisClient?.duplicate();if(redisClient&&redisSubscriber){await Promise.all([redisClient.connect(),redisSubscriber.connect()]);}
