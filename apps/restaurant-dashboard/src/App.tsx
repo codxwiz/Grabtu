@@ -5,31 +5,32 @@ import { BillingPage } from "./BillingPage";
 import { Login } from "./Login";
 import { MenuPage } from "./MenuPage";
 import { PaymentsPage } from "./PaymentsPage";
+import { ServiceRequestsPage } from "./ServiceRequestsPage";
 import { SettingsPage } from "./SettingsPage";
 import { StaffPage } from "./StaffPage";
 import { TablesPage } from "./TablesPage";
 import { disableDemoSession, isDemoSession } from "./demo-mode";
 import type { Billing, CardMerchantConfig, Category, DiningTable, Entitlements, MenuItem, MenuItemOption, PaymentMethodAdmin, RestaurantSettings, ServiceRequest, SessionUser, StaffMember, SupportTicket } from "./types";
-import { isOpenWaiterCall, useWaiterAlertSound, WaiterAlertControls, WaiterAlertStack } from "./WaiterAlerts";
+import { isOpenWaiterCall, isWaiterCall, useWaiterAlertSound, WaiterAlertControls, WaiterAlertStack } from "./WaiterAlerts";
 
 const KdsPage = lazy(() => import("./KdsPage").then(module => ({ default: module.KdsPage })));
 const PRODUCT_NAME = import.meta.env.VITE_PRODUCT_NAME || "Grabtu";
 const THEME_KEY = "white_label_console_theme";
-type Page = "kds" | "menu" | "tables" | "payments" | "staff" | "settings" | "billing";
+type Page = "kds" | "requests" | "menu" | "tables" | "payments" | "staff" | "settings" | "billing";
 
 // This mirrors the API's effective route authorization. Read-only roles can
 // inspect their workspace, while mutation controls are gated independently.
 const ACCESS: Record<string, readonly Page[]> = {
-  OWNER: ["kds", "menu", "tables", "payments", "staff", "settings", "billing"],
-  MANAGER: ["kds", "menu", "tables", "payments", "settings"],
-  SUPERVISOR: ["kds", "menu", "tables", "payments"],
+  OWNER: ["kds", "requests", "menu", "tables", "payments", "staff", "settings", "billing"],
+  MANAGER: ["kds", "requests", "menu", "tables", "payments", "settings"],
+  SUPERVISOR: ["kds", "requests", "menu", "tables", "payments"],
   CASHIER: ["payments"],
-  WAITER: ["menu"],
+  WAITER: ["requests", "menu"],
   KITCHEN: ["kds"],
   ORG_ADMIN: ["kds"],
   ORG_ANALYST: ["menu"],
 };
-const LABEL: Record<Page, string> = { kds: "KDS Mode", menu: "Menu", tables: "Tables & QR", payments: "Payments", staff: "Staff", settings: "Brand Settings", billing: "Billing" };
+const LABEL: Record<Page, string> = { kds: "KDS Mode", requests: "Service Requests", menu: "Menu", tables: "Tables & QR", payments: "Payments", staff: "Staff", settings: "Brand Settings", billing: "Billing" };
 
 function ThemeIcon({ theme }: { theme: "dark" | "light" }) {
   return theme === "dark"
@@ -50,6 +51,7 @@ export function App() {
 
 function Dashboard({ token, onLogout }: { token: string; onLogout: () => void }) {
   const [page, setPage] = useState<Page>("kds");
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">(() => localStorage.getItem(THEME_KEY) === "light" ? "light" : "dark");
   const [user, setUser] = useState<SessionUser | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
@@ -64,6 +66,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
   const [billing, setBilling] = useState<Billing | null>(null);
   const [supportTickets, setSupportTickets] = useState<SupportTicket[]>([]);
+  const [serviceRequests, setServiceRequests] = useState<ServiceRequest[]>([]);
   const [waiterRequests, setWaiterRequests] = useState<ServiceRequest[]>([]);
   const [waiterBusyId, setWaiterBusyId] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -173,8 +176,10 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   const loadBilling = useCallback(async () => setBilling(await api<Billing>("/api/admin/billing", token)), [token]);
   const loadWaiterRequests = useCallback(async () => {
     const next = await api<ServiceRequest[]>("/api/admin/service-requests", token);
-    for (const request of next) seenWaiterRequests.current.add(request.id);
-    setWaiterRequests(next.filter(isOpenWaiterCall));
+    const calls = next.filter(isWaiterCall);
+    for (const request of calls) seenWaiterRequests.current.add(request.id);
+    setServiceRequests(calls);
+    setWaiterRequests(calls.filter(isOpenWaiterCall));
   }, [token]);
   const loadSettings = useCallback(async () => {
     const [profile, limits, tickets] = await Promise.all([
@@ -195,6 +200,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   useEffect(() => { void loadUser(); }, [loadUser]);
   useEffect(() => {
     if (!restaurantId || !canReceiveWaiterCalls) {
+      setServiceRequests([]);
       setWaiterRequests([]);
       return;
     }
@@ -205,15 +211,20 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     let cancelled = false;
     let closeSocket: (() => void) | null = null;
     const onNewRequest = (request: ServiceRequest) => {
-      if (!isOpenWaiterCall(request)) return;
-      setWaiterRequests(current => [request, ...current.filter(entry => entry.id !== request.id)]);
+      if (!isWaiterCall(request)) return;
+      setServiceRequests(current => [request, ...current.filter(entry => entry.id !== request.id)]);
+      if (isOpenWaiterCall(request)) setWaiterRequests(current => [request, ...current.filter(entry => entry.id !== request.id)]);
       if (!seenWaiterRequests.current.has(request.id)) {
         seenWaiterRequests.current.add(request.id);
         void waiterSound.play();
       }
     };
     const onUpdatedRequest = (request: ServiceRequest) => {
+      if (!isWaiterCall(request)) return;
       seenWaiterRequests.current.add(request.id);
+      setServiceRequests(current => request.status.trim().toUpperCase() === "RESOLVED"
+        ? current.filter(entry => entry.id !== request.id)
+        : [request, ...current.filter(entry => entry.id !== request.id)]);
       setWaiterRequests(current => isOpenWaiterCall(request)
         ? [request, ...current.filter(entry => entry.id !== request.id)]
         : current.filter(entry => entry.id !== request.id));
@@ -238,9 +249,9 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   useEffect(() => {
     if (!user || !visiblePages.includes(page)) return;
     setError("");
-    const load = page === "menu" ? loadMenu : page === "tables" ? loadTables : page === "payments" ? loadPaymentWorkspace : page === "staff" ? loadStaff : page === "settings" ? loadSettings : page === "billing" ? loadBilling : null;
+    const load = page === "requests" ? loadWaiterRequests : page === "menu" ? loadMenu : page === "tables" ? loadTables : page === "payments" ? loadPaymentWorkspace : page === "staff" ? loadStaff : page === "settings" ? loadSettings : page === "billing" ? loadBilling : null;
     if (load) void run(load, "");
-  }, [page, loadBilling, loadMenu, loadPaymentWorkspace, loadSettings, loadStaff, loadTables, run, user, visiblePages]);
+  }, [page, loadBilling, loadMenu, loadPaymentWorkspace, loadSettings, loadStaff, loadTables, loadWaiterRequests, run, user, visiblePages]);
 
   async function uploadAsset(kind: "logo" | "cover" | "menu-item", file: File) {
     const data = await new Promise<string>((resolve, reject) => {
@@ -260,7 +271,20 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   async function acknowledgeWaiterRequest(request: ServiceRequest) {
     setWaiterBusyId(request.id);
     const result = await run(() => api<ServiceRequest>(`/api/admin/service-requests/${request.id}`, token, { method: "PATCH", body: JSON.stringify({ status: "ACKNOWLEDGED" }), offline: "queue-safe" }), "Waiter call acknowledged");
-    if (result.ok) setWaiterRequests(current => current.filter(entry => entry.id !== request.id));
+    if (result.ok) {
+      setWaiterRequests(current => current.filter(entry => entry.id !== request.id));
+      setServiceRequests(current => [result.value, ...current.filter(entry => entry.id !== request.id)]);
+    }
+    setWaiterBusyId(null);
+  }
+
+  async function resolveWaiterRequest(request: ServiceRequest) {
+    setWaiterBusyId(request.id);
+    const result = await run(() => api<ServiceRequest>(`/api/admin/service-requests/${request.id}`, token, { method: "PATCH", body: JSON.stringify({ status: "RESOLVED" }), offline: "queue-safe" }), "Waiter call resolved");
+    if (result.ok) {
+      setWaiterRequests(current => current.filter(entry => entry.id !== request.id));
+      setServiceRequests(current => current.filter(entry => entry.id !== request.id));
+    }
     setWaiterBusyId(null);
   }
 
@@ -292,10 +316,11 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
   }
 
   return <div className={`console-shell theme-${theme}`} aria-busy={busy}><a className="skip-link" href="#console-main">Skip to main content</a><div className="console-body">
-    <aside className="console-sidebar" aria-label="Restaurant navigation"><nav className="console-switcher">
+    <aside className={`console-sidebar ${mobileNavOpen ? "mobile-open" : ""}`} aria-label="Restaurant navigation"><nav className="console-switcher">
       <div className="console-brand console-brand-in-panel"><strong className="grabtu-wordmark" aria-label={PRODUCT_NAME}>{PRODUCT_NAME}<span>.</span></strong></div>
-      <div className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => setPage(item)}>{LABEL[item]}</button>)}</div>
-      <button type="button" className="mobile-nav-signout" onClick={signOut}>Sign out</button>
+      <button className="console-nav-toggle" type="button" aria-expanded={mobileNavOpen} aria-controls="console-page-menu" onClick={() => setMobileNavOpen(open => !open)}><span className="console-nav-toggle-icon" aria-hidden="true"><i /><i /><i /></span>{mobileNavOpen ? "Close" : "Menu"}</button>
+      <div id="console-page-menu" className="console-menu-scroll" role="group" aria-label="Console pages">{visiblePages.map(item => <button key={item} type="button" className={`console-tab ${page === item ? "active" : ""}`} aria-current={page === item ? "page" : undefined} onClick={() => { setPage(item); setMobileNavOpen(false); }}>{LABEL[item]}{item === "requests" && waiterRequests.length > 0 && <span className="nav-badge" aria-label={`${waiterRequests.length} waiting`}>{waiterRequests.length}</span>}</button>)}</div>
+      <button type="button" className="mobile-nav-signout" onClick={() => { setMobileNavOpen(false); signOut(); }}>Sign out</button>
     </nav></aside>
     <main id="console-main" tabIndex={-1} className={`console-view page-${page}`}><header className="console-header"><div><p>{user.restaurant.name}</p><h1>{LABEL[page]}</h1></div><div className="header-actions">
       {canReceiveWaiterCalls && <WaiterAlertControls enabled={waiterSound.enabled} blocked={waiterSound.blocked} onToggle={() => { void waiterSound.toggle(); }} onTest={() => { void waiterSound.test(); }} />}<button type="button" className={`theme-toggle ${theme}`} aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`} onClick={() => setTheme(current => current === "dark" ? "light" : "dark")}><ThemeIcon theme={theme} /></button><div className={`live ${navigator.onLine ? "" : "offline"}`}><i /> {navigator.onLine ? "Live" : "Offline"}</div><button type="button" className="signout" onClick={signOut}>Sign out</button>
@@ -304,6 +329,7 @@ function Dashboard({ token, onLogout }: { token: string; onLogout: () => void })
     {error && <div className="error console-prompt" role="alert">{error}</div>}{success && <div className="toast-inline console-prompt" role="status">{success}</div>}
     <Suspense fallback={<section className="operations-card" aria-live="polite"><p>Loading workspace…</p></section>}>
       {page === "kds" && <KdsPage token={token} canManage={Boolean(user.capabilities?.includes("kds.manage"))} canPrepare={canPrepare} onMessage={notifyFromKds} />}
+      {page === "requests" && <ServiceRequestsPage requests={serviceRequests} busyId={waiterBusyId} onAcknowledge={request => { void acknowledgeWaiterRequest(request); }} onResolve={request => { void resolveWaiterRequest(request); }} />}
       {page === "menu" && <MenuPage categories={categories} canManage={canManageMenu} onAddCategory={data => mutate(async () => { await api("/api/admin/menu/categories", token, { method: "POST", body: JSON.stringify(data) }); await loadMenu(); })} onSaveItem={saveItem} onDeleteItem={item => mutate(async () => { await api(`/api/admin/menu/items/${item.id}`, token, { method: "DELETE" }); await loadMenu(); })} onSaveOption={(itemId, data) => mutate(async () => { await api(`/api/admin/menu/items/${itemId}/options`, token, { method: "POST", body: JSON.stringify(data) }); await loadMenu(); })} onUpload={safeUploadAsset} />}
       {page === "tables" && <TablesPage tables={tables} canManage={canManageTables} onAdd={data => mutate(async () => { await api("/api/admin/tables", token, { method: "POST", body: JSON.stringify(data) }); await loadTables(); })} onEdit={(table, data) => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "PATCH", body: JSON.stringify(data) }); await loadTables(); })} onToggle={table => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "PATCH", body: JSON.stringify({ isActive: !table.isActive }) }); await loadTables(); })} onDelete={table => mutate(async () => { await api(`/api/admin/tables/${table.id}`, token, { method: "DELETE" }); await loadTables(); })} onQr={table => api(`/api/admin/tables/${table.id}/qr`, token)} />}
       {page === "payments" && <PaymentsPage methods={payments} cardMerchant={cardMerchant} verificationOrders={verificationOrders} canConfigureUpi={canConfigureUpi} canConfigureCard={canConfigureCard} canVerifyPayments={canVerifyPayments} onAdd={data => mutate(async () => { await api("/api/admin/payment-methods", token, { method: "POST", body: JSON.stringify(data) }); await loadPayments(); })} onToggle={method => mutate(async () => { await api(`/api/admin/payment-methods/${method.id}`, token, { method: "PATCH", body: JSON.stringify({ isActive: !method.isActive }) }); await loadPayments(); })} onDelete={method => mutate(async () => { await api(`/api/admin/payment-methods/${method.id}`, token, { method: "DELETE" }); await loadPayments(); })} onConnectCard={data => mutate(async () => { setCardMerchant(await api<CardMerchantConfig>("/api/admin/card-merchant", token, { method: "PUT", body: JSON.stringify(data) })); })} onDisconnectCard={() => mutate(async () => { await api("/api/admin/card-merchant", token, { method: "DELETE" }); await loadPayments(); })} onVerifyPayment={(order, paymentStatus) => mutate(async () => { await api(`/api/orders/${order.id}/payment-status`, token, { method: "PATCH", body: JSON.stringify({ status: paymentStatus }) }); await loadVerificationOrders(); }, paymentStatus === "paid" ? "Payment confirmed" : "Payment returned to pending")} onRefreshVerification={loadVerificationOrders} />}

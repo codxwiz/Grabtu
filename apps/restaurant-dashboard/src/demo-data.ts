@@ -262,7 +262,7 @@ const state: DemoState = {
   ],
   requests: [
     { id: "req_1", tableId: "table_1", tableLabel: "Table 01", tableCode: "T1", type: "call_waiter", note: "Need an extra water glass", status: "OPEN", createdAt: iso(5) },
-    { id: "req_2", tableId: "table_3", tableLabel: "Patio 01", tableCode: "P1", type: "sauce_refill", note: "Please bring mayo", status: "ACKNOWLEDGED", createdAt: iso(20) },
+    { id: "req_2", tableId: "table_3", tableLabel: "Patio 01", tableCode: "P1", type: "call_waiter", note: "Please bring mayo", status: "ACKNOWLEDGED", createdAt: iso(20) },
   ],
   analytics: {
     days: 7,

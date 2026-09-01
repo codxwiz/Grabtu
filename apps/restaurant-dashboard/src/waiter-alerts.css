@@ -40,7 +40,7 @@ body.console-theme-light .waiter-alert-copy time { color: #796b59; }
   .restaurant-alerts-test { display: none !important; }
   .header-actions .restaurant-alerts-control { width: 44px !important; min-width: 44px !important; height: 44px !important; min-height: 44px !important; border-radius: 14px !important; }
   .header-actions .restaurant-alerts-control svg { width: 21px !important; height: 21px !important; }
-  .waiter-alert-stack { top: 12px; right: 12px; width: calc(100vw - 24px); }
+  .waiter-alert-stack { top: 88px; right: 12px; width: calc(100vw - 24px); }
   .waiter-alert-card { padding: 15px; }
 }
 @media (max-width: 430px) {

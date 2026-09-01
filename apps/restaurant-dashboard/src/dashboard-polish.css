@@ -48,10 +48,7 @@
 .menu-item-actions button { min-width: 88px; }
 .item-form form > button + button { margin-top: var(--console-gap-2) !important; }
 
-.settings-support-column {
-  grid-column: 1 / -1;
-  min-width: 0;
-}
+.page-settings .settings-aside { grid-template-columns: minmax(0, 1fr) !important; }
 .support-ticket-card {
   display: grid;
   grid-template-columns: minmax(220px, .6fr) minmax(0, 1.4fr);
@@ -61,6 +58,14 @@
   border-radius: 22px;
   background: #222829;
 }
+.settings-aside .support-ticket-card {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+  padding: 20px;
+  border-radius: 18px;
+}
+.settings-aside .support-ticket-fields { grid-template-columns: minmax(0, 1fr); }
+.settings-aside .support-ticket-card h2 { font-size: 24px; }
 .support-ticket-card > div:first-child { align-self: start; }
 .support-ticket-card h2 { margin: 6px 0 8px; font-size: 28px; }
 .support-ticket-card p { margin: 0; color: #aab4bd; line-height: 1.55; }
@@ -91,8 +96,12 @@
 body.console-theme-light .support-ticket-card {
   border-color: #dbe1d9;
   background: #fff;
+  color: #202820;
   box-shadow: 0 10px 24px rgba(36, 46, 36, .06);
 }
+body.console-theme-light .support-ticket-card .eyebrow { color: #168b7a !important; }
+body.console-theme-light .support-ticket-card p,
+body.console-theme-light .support-ticket-card small { color: #69746d; }
 body.console-theme-light .support-ticket-card label { color: #35423a; }
 body.console-theme-light .support-ticket-card input,
 body.console-theme-light .support-ticket-card select,
@@ -108,6 +117,8 @@ body.console-theme-light .support-ticket-card textarea { border-color: #cbd5d1; 
 .payment-review-card { display: grid; gap: 18px; }
 .payment-review-card .merchant-connect-heading { align-items: flex-end; }
 .payment-review-card .merchant-connect-heading > div { min-width: 0; }
+.payment-review-card .merchant-connect-heading .eyebrow { color: #fff !important; }
+.payment-review-card .merchant-connect-heading h2 { color: #fff !important; }
 .payment-review-card .merchant-connect-heading > button {
   width: auto;
   min-width: 112px;
@@ -118,7 +129,7 @@ body.console-theme-light .support-ticket-card textarea { border-color: #cbd5d1; 
 .payment-review-list { display: grid; gap: var(--console-gap-2); }
 .payment-review-row {
   display: grid;
-  grid-template-columns: minmax(170px, 1fr) auto auto minmax(180px, auto);
+  grid-template-columns: minmax(170px, 1fr) auto auto minmax(264px, max-content);
   align-items: center;
   gap: var(--console-gap-3);
   margin: 0;
@@ -132,10 +143,33 @@ body.console-theme-light .support-ticket-card textarea { border-color: #cbd5d1; 
 .payment-review-row > div:first-child { display: grid; gap: 4px; min-width: 0; }
 .payment-review-row small { color: #aab4bd; }
 .payment-review-row > strong { color: #7ee8c6; white-space: nowrap; }
-.payment-review-actions { display: flex; gap: var(--console-gap-1); }
-.payment-review-actions button { min-height: var(--console-touch) !important; margin: 0 !important; padding: 10px 14px !important; white-space: nowrap; }
+.payment-review-actions { display: flex; flex-wrap: nowrap; gap: var(--console-gap-1); }
+.payment-review-actions button {
+  flex: 0 0 auto;
+  width: auto !important;
+  min-width: max-content;
+  min-height: var(--console-touch) !important;
+  margin: 0 !important;
+  padding: 10px 14px !important;
+  white-space: nowrap;
+}
 body.console-theme-light .payment-review-row { border-color: #dbe1d9; background: #fff !important; color: #202820 !important; }
 body.console-theme-light .payment-review-row small { color: #69746d; }
+body.console-theme-light .page-payments .merchant-connect-card { color: #f4f7f5 !important; }
+body.console-theme-light .page-payments .merchant-connect-card .merchant-connect-heading .eyebrow,
+body.console-theme-light .page-payments .merchant-connect-card .merchant-connect-heading h2,
+body.console-theme-light .page-payments .merchant-connect-card .merchant-key-form label { color: #fff !important; }
+body.console-theme-light .page-payments .merchant-connect-card .merchant-connect-heading p:not(.eyebrow),
+body.console-theme-light .page-payments .merchant-connect-card .merchant-help,
+body.console-theme-light .page-payments .merchant-connect-card .merchant-key-form small { color: #c7d0cd !important; }
+.theme-light .station-column > header { color: #506056; }
+.theme-light .station-column > header b { background: #eef2ed; color: #202820; }
+.theme-light .station-ticket-head small,
+.theme-light .station-ticket > time,
+.theme-light .data-list small { color: #5d6b67; }
+.theme-light .station-ticket-head > span,
+.theme-light .data-list em { background: #eef2ed; color: #40504b; }
+.theme-light .station-ticket li small { color: #8a5418; }
 .color-field input[type="color"] { min-width: 48px; min-height: 44px !important; }
 
 @media (min-width: 851px) {
@@ -266,6 +300,53 @@ body.console-theme-light .payment-review-row small { color: #69746d; }
   .payment-cards article,
   .staff-list article,
   .menu-category article { grid-template-columns: 48px minmax(0, 1fr) !important; gap: var(--console-gap-2) !important; }
+  .payment-cards article {
+    grid-template-columns: 72px minmax(0, 1fr) !important;
+    align-items: start !important;
+  }
+  .payment-cards article > div:nth-child(2) { min-width: 0; }
+  .payment-cards .generated-qr-mark {
+    width: 72px;
+    height: 72px;
+    font-size: 15px;
+  }
+  .payment-cards h2 {
+    max-width: 100%;
+    font-size: 20px !important;
+    line-height: 1.1 !important;
+    overflow-wrap: anywhere;
+  }
+  .payment-method-actions {
+    grid-column: 1 / -1;
+    display: flex !important;
+    gap: var(--console-gap-2) !important;
+    width: 100%;
+    padding-top: 4px;
+  }
+  .payment-method-actions > button {
+    flex: 1 1 0;
+    width: auto !important;
+    min-width: 0;
+    margin: 0 !important;
+  }
+  .page-settings .premium-limits {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 8px !important;
+  }
+  .page-settings .premium-limits > div {
+    min-width: 0;
+    padding: 10px 8px !important;
+  }
+  .page-settings .premium-limits span {
+    font-size: 9px !important;
+    letter-spacing: -.02em;
+    white-space: nowrap;
+  }
+  .page-settings .premium-limits b { font-size: 24px !important; }
+  .page-settings .premium-limits small {
+    font-size: 10px !important;
+    line-height: 1.25 !important;
+  }
   .payment-cards article > button,
   .staff-list article > button,
   .menu-item-actions { grid-column: 1 / -1; width: 100%; }
@@ -306,8 +387,11 @@ body.console-theme-light .payment-review-row small { color: #69746d; }
   .payment-review-card .merchant-connect-heading > button { width: 100%; }
   .payment-review-row { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .payment-review-row > strong { font-size: 18px; }
-  .payment-review-actions { display: grid; grid-template-columns: 1fr; }
-  .payment-review-actions button { width: 100%; }
+  .payment-review-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+  }
+  .payment-review-actions button { width: 100% !important; min-width: 0; }
 }
 
 @media (max-width: 430px) {
@@ -324,18 +408,140 @@ body.console-theme-light .payment-review-row small { color: #69746d; }
 }
 
 @media (min-width: 851px) {
+  .console-shell .console-sidebar {
+    height: auto !important;
+    max-height: calc(100vh - 36px) !important;
+    overflow-y: auto !important;
+  }
+  .console-sidebar .console-switcher {
+    align-items: stretch !important;
+    height: auto !important;
+  }
   .console-menu-scroll {
     display: flex !important;
     flex-direction: column !important;
     gap: 14px !important;
+    align-self: stretch;
+    width: 100% !important;
     min-height: 0;
-    padding: 4px 2px 10px;
+    padding: 4px 0 10px;
     overflow-y: auto;
     scrollbar-width: thin;
   }
   .console-sidebar .console-tab {
     flex: 0 0 auto !important;
+    width: 100% !important;
+    min-width: 0 !important;
     margin: 0 !important;
+    padding-inline: 18px !important;
+    border-radius: 18px !important;
+    box-shadow: none !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+  }
+  body.console-theme-light .console-sidebar .console-tab:not(.active):not(:hover):not(:focus-visible) {
+    background: #fff !important;
+    border-color: #dbe1d9 !important;
+    box-shadow: none !important;
+  }
+  body.console-theme-dark .console-sidebar .console-tab:not(.active):not(:hover):not(:focus-visible) {
+    background: #292e32 !important;
+    border-color: #3f474d !important;
+    box-shadow: none !important;
+  }
+  .console-sidebar .console-tab.active,
+  .console-sidebar .console-tab:hover,
+  .console-sidebar .console-tab:focus-visible { box-shadow: none !important; }
+}
+
+.console-nav-toggle { display: none !important; }
+
+@media (max-width: 850px) {
+  .console-shell .console-sidebar {
+    z-index: 180;
+  }
+  .console-shell .console-sidebar.mobile-open {
+    z-index: 200;
+  }
+  .console-switcher {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+  }
+  .console-brand-in-panel {
+    grid-column: 1;
+  }
+  .console-nav-toggle {
+    grid-column: 2;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 94px;
+    min-height: var(--console-touch) !important;
+    margin: 0 !important;
+    padding: 9px 13px !important;
+    border-radius: 13px !important;
+    color: #eef2f0 !important;
+    font: 600 12px Oswald, sans-serif !important;
+    text-transform: uppercase;
+  }
+  .console-nav-toggle-icon {
+    display: grid;
+    gap: 3px;
+    width: 16px;
+  }
+  .console-nav-toggle-icon i {
+    display: block;
+    width: 16px;
+    height: 1px;
+    background: currentColor;
+  }
+  .console-menu-scroll {
+    grid-column: 1 / -1;
+    display: none !important;
+    flex-direction: column !important;
+    gap: 10px !important;
+    width: 100%;
+    padding: 8px 0 2px;
+    overflow: visible;
+  }
+  .console-sidebar.mobile-open .console-menu-scroll {
+    display: flex !important;
+  }
+  .console-sidebar .console-tab {
+    width: 100% !important;
+    min-width: 0 !important;
+    min-height: 48px !important;
+    padding: 11px 14px !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    font-size: 14px !important;
+  }
+  .mobile-nav-signout {
+    display: none !important;
+  }
+  .console-sidebar.mobile-open .mobile-nav-signout {
+    grid-column: 1 / -1;
+    display: inline-flex !important;
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* The mobile navigation sits on the dark sidebar surface in both themes. */
+  body.console-theme-light .console-brand-in-panel .grabtu-wordmark {
+    color: #fff !important;
+    background: none !important;
+    -webkit-background-clip: initial !important;
+    background-clip: initial !important;
+    -webkit-text-fill-color: #fff !important;
+    filter: none !important;
+    text-shadow: none !important;
+  }
+  body.console-theme-light .console-brand-in-panel .grabtu-wordmark span {
+    color: #2dd4bf !important;
+    -webkit-text-fill-color: #2dd4bf !important;
+  }
+  body.console-theme-light .console-sidebar .console-tab:not(.active):not(:hover) {
+    color: #fff !important;
   }
 }
 

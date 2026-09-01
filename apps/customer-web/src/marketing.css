@@ -4,6 +4,100 @@
 @media(max-width:850px){.site-header{height:68px;grid-template-columns:1fr auto;padding:0 20px;position:sticky;top:0}.wordmark{font-size:24px}.menu-toggle{display:flex;align-items:center;justify-content:center;min-width:64px;min-height:44px;margin-right:-10px;padding:0 10px;border:0;background:none;color:var(--ink);font:500 11px DM Mono,monospace;text-transform:uppercase}.site-header nav{display:none;position:absolute;top:67px;left:0;right:0;background:var(--paper);border-bottom:1px solid;flex-direction:column;gap:0;padding:10px 20px 18px}.site-header nav.open{display:flex}.site-header nav .mobile-home-link{display:flex}.site-header nav a{display:flex;align-items:center;min-height:50px;border-bottom:1px solid #d1d1cd;font-size:13px}.site-header nav a:last-child{border:0}.header-login{display:none}.hero{min-height:auto;padding:48px 20px 42px}.hero h1{margin:42px 0 46px;font-size:clamp(46px,13vw,53px);line-height:.88;letter-spacing:-.075em}.hero-bottom{grid-template-columns:1fr;gap:28px}.hero-bottom>p{font-size:18px;line-height:1.45}.action-row{width:100%;justify-self:start;flex-direction:column;align-items:flex-start;gap:22px}.action-row .button{width:100%}.product-board{margin:0}.board-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.board-grid article{min-width:0;min-height:154px;padding:18px 12px 16px;border-right:1px solid #333;border-bottom:0}.board-grid small{font-size:8px;white-space:nowrap}.board-grid b{font-size:clamp(26px,8.5vw,40px);line-height:1;white-space:nowrap}.board-grid p{font-size:12px;line-height:1.35}.board-top{padding:15px 20px}.board-line{overflow:hidden;padding:17px 20px;font-size:8px}.board-line i{margin:0 8px}.statement{padding:72px 20px;grid-template-columns:1fr;gap:40px}.statement h2{font-size:clamp(26px,7.5vw,30px);line-height:1.12}.statement h2 span{display:block;white-space:nowrap}.home-services{grid-template-columns:repeat(3,minmax(0,1fr))}.home-services article{min-width:0;min-height:250px;padding:24px 12px 30px;border-right:1px solid;border-bottom:0}.home-services article:last-child{border-right:0}.home-services h3{margin:0 0 14px;font-size:clamp(18px,5.2vw,24px);line-height:1.08}.home-services p{margin:0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}.principles{grid-template-columns:1fr}.principles article{padding:28px 20px 44px;border-right:0;border-bottom:1px solid;min-height:220px}.principles h3{margin-top:48px;font-size:28px}.closing-cta{padding:76px 20px 86px}.closing-cta h2{font-size:54px;margin:54px 0}.closing-cta .button{position:static;width:100%}.site-footer{grid-template-columns:1fr 1fr;gap:38px 24px;padding:50px 20px}.site-footer>div:first-child,.footer-copy{grid-column:1/-1}.site-footer p{margin:0}.footer-copy{align-self:auto}.inner-hero,.legal-page{padding:58px 20px 68px;min-height:auto}.inner-hero h1,.legal-page h1{font-size:48px;line-height:.96;margin:42px 0 36px}.page-lead{font-size:18px;margin-top:0}.service-list article{grid-template-columns:36px 1fr;gap:18px;padding:26px 20px}.service-list article h2{font-size:30px}.service-list article p{grid-column:2;margin-top:0}.inline-cta{padding:70px 20px;align-items:flex-start;flex-direction:column}.inline-cta h2{font-size:44px}.inline-cta .button{width:100%}.plan-grid{grid-template-columns:1fr;padding:0 20px 70px}.plan-grid article{min-height:auto;padding:28px 24px}.plan-grid h2{margin-top:42px}.plan-grid .button{width:100%;min-width:0}.pricing-note{padding:0 20px 70px}.about-grid{grid-template-columns:1fr;padding:72px 20px;gap:36px}.about-grid h2{font-size:clamp(23px,6.4vw,27px);line-height:1.08;margin-bottom:38px}.about-grid h2 span{display:block;white-space:nowrap}.about-grid>div>p{font-size:17px}.contact-layout{grid-template-columns:1fr;min-height:auto}.contact-layout>div{padding:58px 20px 64px;border-right:0;border-bottom:1px solid}.contact-layout h1{font-size:52px;margin:44px 0}.contact-layout>div>p:not(.kicker){font-size:17px}.contact-layout form{padding:58px 20px;gap:24px}.contact-layout .button{width:100%}}
 @media(max-width:360px){.hero h1{font-size:43px}.closing-cta h2{font-size:48px}.inner-hero h1,.legal-page h1{font-size:43px}.contact-layout h1{font-size:47px}}
 @media(prefers-reduced-motion:reduce){.live-dot::before{animation:none}.marketing-shell *{scroll-behavior:auto!important;transition:none!important}}
+
+/* Grabtu monochrome marketing theme: white content, black navigation chrome. */
+.marketing-shell{
+  --paper:#fff;
+  background:#fff;
+  color:#090909;
+}
+.marketing-shell main,
+.hero,
+.statement,
+.home-services,
+.home-premium,
+.premium-promise,
+.closing-cta,
+.inner-hero,
+.legal-page,
+.service-list,
+.inline-cta,
+.plan-grid,
+.about-grid,
+.principles,
+.contact-layout,
+.contact-copy,
+.contact-card-wrap,
+.comparison-section,
+.business-spotlight,
+.pricing-faq,
+.pricing-final{
+  background:#fff;
+  color:#090909;
+}
+.site-header{
+  background:#090909;
+  color:#fff;
+  border-bottom-color:#2d2d2d;
+}
+.site-header .wordmark,
+.site-header nav a,
+.site-header .header-login,
+.site-header .menu-toggle{
+  color:#fff;
+}
+.site-footer{
+  background:#090909;
+  color:#fff;
+  border-top-color:#2d2d2d;
+}
+.site-footer .wordmark,
+.site-footer a:not(.wordmark){color:#fff}
+.site-footer small{color:#aaa}
+.site-footer p{color:#c8c8c8}
+.closing-cta .button.white,
+.inline-cta .button.white,
+.business-spotlight .button.white,
+.plan-grid article.featured .button.white{
+  background:#090909;
+  color:#fff;
+}
+.plan-grid article.featured{
+  background:#fff;
+  color:#090909;
+}
+.plan-grid .featured>p:not(.kicker),
+.plan-grid .featured .plan-detail,
+.featured .plan-price span,
+.business-spotlight>div>p:not(.kicker),
+.business-spotlight dd span,
+.business-spotlight dt{
+  color:#555!important;
+}
+.plan-grid .featured .plan-capacity,
+.business-spotlight dl div{
+  border-color:#bdbdb8;
+}
+.text-link.light{color:#090909}
+.comparison-scroll tbody td:nth-child(3){background:#fff}
+.contact-layout,
+.contact-card-wrap,
+.contact-layout .contact-card,
+.contact-layout input,
+.contact-layout textarea{
+  background:#fff;
+}
+@media(max-width:850px){
+  .site-header nav{
+    background:#090909;
+    border-bottom-color:#2d2d2d;
+  }
+  .site-header nav a{border-bottom-color:#333}
+  .site-header nav .mobile-login-link{
+    background:#fff;
+    color:#090909;
+  }
+}
 .contact-layout{grid-template-columns:minmax(0,.88fr) minmax(620px,1.12fr);background:#e8e8e3}.contact-layout h1{font-size:clamp(58px,6vw,86px)}.contact-copy{padding:100px clamp(40px,7vw,110px)!important;display:flex;flex-direction:column;align-items:flex-start;border-right:1px solid #c5c5bf!important}.contact-layout .contact-copy>p:not(.kicker){font-size:20px;line-height:1.6;max-width:540px;color:#555}.contact-layout .contact-copy>a{color:var(--ink);font:12px DM Mono,monospace}.contact-card-wrap{padding:64px clamp(38px,5vw,78px)!important;display:flex;align-items:center;border:0!important;background:linear-gradient(145deg,#dcdcd6,#f0f0ec)}.contact-layout .contact-card{width:100%;max-width:850px;margin:auto;padding:42px;background:#fff;border:1px solid #c8c8c2;box-shadow:0 24px 70px rgba(0,0,0,.12);display:flex;flex-direction:column;gap:28px}.form-heading{display:grid;grid-template-columns:1fr auto;gap:8px 24px;padding-bottom:28px;border-bottom:1px solid #deded9}.form-heading .kicker{grid-column:1/-1;margin:0}.form-heading h2{margin:0;font-size:30px;letter-spacing:-.045em}.form-heading span{align-self:end;color:#666;font-size:12px;max-width:230px;text-align:right;line-height:1.5}.contact-short-fields{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}.contact-layout label{display:block;font:10px DM Mono,monospace;letter-spacing:.08em}.contact-layout input,.contact-layout textarea{width:100%;margin-top:9px;border:1px solid #cacac4;background:#f7f7f4;border-radius:0;padding:14px;font:15px Manrope,sans-serif;resize:vertical;transition:border-color .2s,box-shadow .2s,background .2s}.contact-layout input{height:50px}.contact-layout textarea{min-height:142px}.contact-layout input:focus,.contact-layout textarea:focus{border-color:#090909;background:#fff;box-shadow:0 0 0 1px #090909;outline:0}.contact-layout input::placeholder,.contact-layout textarea::placeholder{color:#92928e}.contact-layout .contact-card .button{align-self:flex-end}
 @media(max-width:1100px) and (min-width:851px){.contact-layout{grid-template-columns:minmax(340px,.75fr) minmax(0,1.25fr)}.contact-card-wrap{padding:42px 28px!important}.contact-layout .contact-card{padding:34px}.contact-short-fields{grid-template-columns:1fr 1fr}.contact-short-fields label:last-child{grid-column:1/-1}}
 @media(max-width:850px){.contact-layout{grid-template-columns:1fr}.contact-copy{padding:58px 20px 64px!important;border-right:0!important;border-bottom:1px solid #c5c5bf!important}.contact-layout .contact-copy>p:not(.kicker){font-size:17px}.contact-card-wrap{padding:28px 16px 48px!important}.contact-layout .contact-card{padding:26px 20px;gap:24px;box-shadow:0 16px 45px rgba(0,0,0,.12)}.form-heading{grid-template-columns:1fr;padding-bottom:22px}.form-heading h2{font-size:25px}.form-heading span{text-align:left;max-width:none}.contact-short-fields{grid-template-columns:1fr;gap:20px}.contact-layout .contact-card .button{width:100%}}
@@ -17,3 +111,24 @@
 @media(max-width:850px){.hero-showcase{display:block;margin-top:42px}.hero .hero-copy h1{font-size:clamp(46px,13vw,53px);line-height:.88;margin:0 0 46px}.hero-dashboard{margin-top:42px;box-shadow:10px 10px 0 #d8d8d2}.hero-dashboard figcaption{height:36px;padding:0 12px;font-size:8px}.hero-dashboard img{aspect-ratio:16/10}}
 .site-header nav .mobile-login-link{display:none}
 @media(max-width:850px){.site-header nav .mobile-login-link{display:flex;margin-top:10px;padding:0 14px;justify-content:space-between;background:var(--ink);color:#fff;border:0}.site-header nav .mobile-login-link::after{display:none}}
+@media(min-width:851px){.premium-promise{grid-template-columns:minmax(210px,.55fr) minmax(0,1.45fr);gap:48px}.premium-promise>div{align-self:center}}
+@media(min-width:851px){.plans-intro{min-height:auto;padding-top:36px;padding-bottom:24px}.plans-intro h1{margin-top:0;margin-bottom:0}.premium-promise{padding-top:30px}}
+@media(max-width:850px){.plans-intro{padding-top:24px;padding-bottom:18px}.plans-intro h1{margin-top:0;margin-bottom:0;font-size:clamp(27px,8vw,31px);letter-spacing:-.06em;white-space:nowrap}.premium-promise{padding-top:22px}}
+
+/* Final monochrome surface overrides live last so every route stays consistent. */
+.marketing-shell{--paper:#fff;background:#fff;color:#090909}
+.marketing-shell main,.hero,.statement,.home-services,.home-premium,.premium-promise,.closing-cta,.inner-hero,.legal-page,.service-list,.inline-cta,.plan-grid,.about-grid,.principles,.contact-layout,.contact-copy,.contact-card-wrap,.comparison-section,.business-spotlight,.pricing-faq,.pricing-final{background:#fff;color:#090909}
+.closing-cta{border-top:1px solid #090909}
+.site-header{background:#090909;color:#fff;border-bottom-color:#2d2d2d}
+.site-header .wordmark,.site-header nav a,.site-header .header-login,.site-header .menu-toggle{color:#fff}
+.site-footer{background:#090909;color:#fff;border-top-color:#2d2d2d}
+.site-footer .wordmark,.site-footer a:not(.wordmark){color:#fff}
+.site-footer small{color:#aaa}.site-footer p{color:#c8c8c8}
+.closing-cta .button.white,.inline-cta .button.white,.business-spotlight .button.white,.plan-grid article.featured .button.white{background:#090909;color:#fff}
+.plan-grid article.featured{background:#fff;color:#090909}
+.plan-grid .featured>p:not(.kicker),.plan-grid .featured .plan-detail,.featured .plan-price span,.business-spotlight>div>p:not(.kicker),.business-spotlight dd span,.business-spotlight dt{color:#555!important}
+.plan-grid .featured .plan-capacity,.business-spotlight dl,.business-spotlight dl div{border-color:#bdbdb8}
+.text-link.light{color:#090909}
+.comparison-scroll tbody td:nth-child(3){background:#fff}
+.contact-layout,.contact-card-wrap,.contact-layout .contact-card,.contact-layout input,.contact-layout textarea{background:#fff}
+@media(max-width:850px){.site-header nav{background:#090909;border-bottom-color:#2d2d2d}.site-header nav a{border-bottom-color:#333}.site-header nav .mobile-login-link{background:#fff;color:#090909}}

@@ -4,9 +4,13 @@ import type { ServiceRequest } from "./types";
 const SOUND_KEY = "grabtu_waiter_alert_sound";
 const SOUND_URL = "/alerts/waiter-bell.mp3";
 
-export function isOpenWaiterCall(request: ServiceRequest) {
+export function isWaiterCall(request: ServiceRequest) {
   const type = request.type.trim().toUpperCase();
-  return request.status.trim().toUpperCase() === "OPEN" && (type === "WAITER" || type === "CALL_WAITER");
+  return type === "WAITER" || type === "CALL_WAITER";
+}
+
+export function isOpenWaiterCall(request: ServiceRequest) {
+  return request.status.trim().toUpperCase() === "OPEN" && isWaiterCall(request);
 }
 
 export function useWaiterAlertSound() {

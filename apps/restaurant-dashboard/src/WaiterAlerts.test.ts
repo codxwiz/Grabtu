@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { isOpenWaiterCall } from "./WaiterAlerts";
+import { isOpenWaiterCall, isWaiterCall } from "./WaiterAlerts";
 import type { ServiceRequest } from "./types";
 
 const request = (type: string, status = "OPEN"): ServiceRequest => ({
@@ -20,4 +20,9 @@ test("recognizes production and demo waiter-call shapes", () => {
 test("does not alert for acknowledged or unrelated service requests", () => {
   assert.equal(isOpenWaiterCall(request("WAITER", "ACKNOWLEDGED")), false);
   assert.equal(isOpenWaiterCall(request("SAUCE_REFILL")), false);
+});
+
+test("keeps acknowledged waiter calls available for the service request queue", () => {
+  assert.equal(isWaiterCall(request("CALL_WAITER", "ACKNOWLEDGED")), true);
+  assert.equal(isWaiterCall(request("SAUCE_REFILL", "ACKNOWLEDGED")), false);
 });
